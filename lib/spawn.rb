@@ -1,7 +1,7 @@
 module Spawn
 
-  # default to forking
-  @@method = :fork
+  # default to forking (unless windows)
+  @@method = (RUBY_PLATFORM =~ /win32/) ? :thread : :fork
 
   # add calls to this in your environment.rb to set your configuration, for example,
   # to use forking everywhere except your 'development' environment:
