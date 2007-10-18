@@ -13,7 +13,6 @@ class ActiveRecord::Base
   # monkey patch to fix threading problems,
   # see: http://dev.rubyonrails.org/ticket/7579
   def self.clear_reloadable_connections!
-    puts "spawn's version of clear_reloadable_connections!"
     if @@allow_concurrency
       # Hash keyed by thread_id in @@active_connections. Hash of hashes.
       @@active_connections.each do |thread_id, conns|
