@@ -19,3 +19,7 @@ v0.3 - 2007/10/15
 * added wait() method to wait for spawned code blocks
 * don't allow threading if allow_concurrency=false
 
+--------------------------------------------------
+v0.4 - 2007/TBD
+
+* default to :thread on windows, still :fork on all other platforms
