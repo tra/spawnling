@@ -45,18 +45,25 @@ For example, this is how you can tell spawn to use threading on the call,
     something
   end
   
-When using the :thread setting, spawn will check to make sure that you have set allow_concurrency=true in your configuration.   If it is not set, then spawn will
-issue a warning in your log and revert to using :fork.
+When using the :thread setting, spawn will check to make sure that you have set
+allow_concurrency=true in your configuration.   If you want this setting then
+put this line in one of your environment config files: 
+
+  config.active_record.allow_concurrency = true
+
+If it is not set, then spawn will issue a warning in your log each time it is
+invoked and revert to using :fork.
 
 To (optionally) configure the spawn method in your configuration, add a line to
 your configuration file(s) like this:
 
-Spawn::method :thread
+  Spawn::method :thread
 
-If you don't set any configuration, the :method will default to :fork.  To specify different values for different environments, pass the environment as the 2nd
-argument:
+If you don't set any configuration, the :method will default to :fork.  To
+specify different values for different environments, pass the environment as
+the 2nd argument:
 
-Spawn::method :fork, 'production'
+  Spawn::method :fork, 'production'
 
 This allows you to set your production and development environments to use different
 methods according to your needs.
