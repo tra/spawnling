@@ -20,6 +20,7 @@ v0.3 - 2007/10/15
 * don't allow threading if allow_concurrency=false
 
 --------------------------------------------------
-v0.4 - 2007/TBD
+v0.4 - 2008/1/26
 
 * default to :thread on windows, still :fork on all other platforms
+* raise exception when used with :method=>:true and allow_concurrency != true

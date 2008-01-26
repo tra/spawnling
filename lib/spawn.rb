@@ -24,8 +24,8 @@ module Spawn
       if ActiveRecord::Base.allow_concurrency
         thread_it(options) { yield }
       else
-        logger.warn("spawn(:method=>:thread) only allowed when allow_concurrency=true, reverting to :method=>:fork")
-        fork_it(options) { yield }
+        logger.error("spawn(:method=>:thread) only allowed when allow_concurrency=true")
+        raise "spawn requires config.active_record.allow_concurrency=true when used with :method=>:thread"
       end
     else
       fork_it(options) { yield }
