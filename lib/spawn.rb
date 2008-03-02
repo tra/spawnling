@@ -1,7 +1,7 @@
 module Spawn
 
-  # default to forking (unless windows)
-  @@method = (RUBY_PLATFORM =~ /win32/) ? :thread : :fork
+  # default to forking (unless windows or jruby)
+  @@method = (RUBY_PLATFORM =~ /(win32|java)/) ? :thread : :fork
 
   # add calls to this in your environment.rb to set your configuration, for example,
   # to use forking everywhere except your 'development' environment:
@@ -20,7 +20,9 @@ module Spawn
   def spawn(options = {})
     options.symbolize_keys!
     # setting options[:method] will override configured value in @@method
-    if options[:method] == :thread || (options[:method] == nil && @@method == :thread)
+    if options[:method] == :yield || @@method == :yield
+      yield
+    elsif options[:method] == :thread || (options[:method] == nil && @@method == :thread)
       if ActiveRecord::Base.allow_concurrency
         thread_it(options) { yield }
       else
@@ -70,6 +72,7 @@ module Spawn
         # run the block of code that takes so long
         yield
       ensure
+        ActiveRecord::Base.connection.disconnect!
         ActiveRecord::Base.remove_connection
       end
       # this form of exit doesn't call at_exit handlers

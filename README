@@ -64,6 +64,7 @@ specify different values for different environments, pass the environment as
 the 2nd argument:
 
   Spawn::method :fork, 'production'
+  Spawn::method :yield, 'test'
 
 This allows you to set your production and development environments to use different
 methods according to your needs.
