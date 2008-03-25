@@ -30,3 +30,7 @@ v0.5 - 2008/3/1
 * also default to :thread on JRuby (java)
 * added new :method => :yield which doesn't fork or thread, this is useful for testing
 * fixed problem with connections piling up on PostgreSQL
+
+--------------------------------------------------
+v0.6 - 2008/MM/DD
+* don't need to apply clear_reloadable_connections patch on Rails 2.x

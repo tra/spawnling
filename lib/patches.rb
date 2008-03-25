@@ -10,25 +10,28 @@ class ActiveRecord::Base
     establish_connection(spec ? spec.config : nil)
   end
 
-  # monkey patch to fix threading problems,
-  # see: http://dev.rubyonrails.org/ticket/7579
-  def self.clear_reloadable_connections!
-    if @@allow_concurrency
-      # Hash keyed by thread_id in @@active_connections. Hash of hashes.
-      @@active_connections.each do |thread_id, conns|
-        conns.each do |name, conn|
-          if conn.requires_reloading?
-            conn.disconnect!
-            @@active_connections[thread_id].delete(name)
+  # this patch not needed on Rails 2.x and later
+  if Rails::VERSION::MAJOR == 1
+    # monkey patch to fix threading problems,
+    # see: http://dev.rubyonrails.org/ticket/7579
+    def self.clear_reloadable_connections!
+      if @@allow_concurrency
+        # Hash keyed by thread_id in @@active_connections. Hash of hashes.
+        @@active_connections.each do |thread_id, conns|
+          conns.each do |name, conn|
+            if conn.requires_reloading?
+              conn.disconnect!
+              @@active_connections[thread_id].delete(name)
+            end
           end
         end
-      end
-    else
-      # Just one level hash, no concurrency.
-      @@active_connections.each do |name, conn|
-        if conn.requires_reloading?
-          conn.disconnect!
-          @@active_connections.delete(name)
+      else
+        # Just one level hash, no concurrency.
+        @@active_connections.each do |name, conn|
+          if conn.requires_reloading?
+            conn.disconnect!
+            @@active_connections.delete(name)
+          end
         end
       end
     end
