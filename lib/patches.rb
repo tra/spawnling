@@ -1,10 +1,11 @@
+# see activerecord/lib/active_record/connection_adaptors/abstract/connection_specification.rb
 class ActiveRecord::Base
-
-  # method to allow a child process to establish a new connection while letting
-  # the parent retain the original connection
-  def self.reconnect_in_child(klass=self)
+  # reconnect without diconnecting
+  def self.spawn_reconnect(klass=self)
     spec = @@defined_connections[klass.name]
     konn = active_connections[klass.name]
+    # remove from internal arrays before calling establish_connection so that
+    # the connection isn't disconnected when it calls AR::Base.remove_connection
     @@defined_connections.delete_if { |key, value| value == spec }
     active_connections.delete_if { |key, value| value == konn }
     establish_connection(spec ? spec.config : nil)
@@ -36,5 +37,15 @@ class ActiveRecord::Base
       end
     end
   end
+end
 
+# see mongrel/lib/mongrel.rb
+class Mongrel::HttpServer
+  # redefine Montrel::HttpServer::process_client so that we can intercept
+  # the socket that is being used so Spawn can close it upon forking
+  alias_method :orig_process_client, :process_client
+  def process_client(socket)
+    Spawn.socket = socket
+    orig_process_client(socket)
+  end
 end

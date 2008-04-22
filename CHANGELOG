@@ -32,5 +32,8 @@ v0.5 - 2008/3/1
 * fixed problem with connections piling up on PostgreSQL
 
 --------------------------------------------------
-v0.6 - 2008/MM/DD
-* don't need to apply clear_reloadable_connections patch on Rails 2.x
+v0.6 - 2008/04/21
+* only apply clear_reloadable_connections patch on Rails 1.x (7579 fixed in Rails 2.x)
+* made it more responsive in more environments by disconnecting from the listener socket in the forked process
+
+--------------------------------------------------

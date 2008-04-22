@@ -2,6 +2,8 @@ module Spawn
 
   # default to forking (unless windows or jruby)
   @@method = (RUBY_PLATFORM =~ /(win32|java)/) ? :thread : :fork
+  # socket to close in child process
+  @@socket = nil
 
   # add calls to this in your environment.rb to set your configuration, for example,
   # to use forking everywhere except your 'development' environment:
@@ -11,8 +13,20 @@ module Spawn
     if !env || env == RAILS_ENV
       @@method = method
     end
+    RAILS_DEFAULT_LOGGER.debug "spawn> method = #{@@method}" if defined? RAILS_DEFAULT_LOGGER
   end
-  
+
+  # set the socket to disconnect from in the child process (when forking)
+  def self.socket=(socket)
+    @@socket = socket
+  end
+
+  # close the socket set in socket=
+  def self.close_socket
+    @@socket.close if @@socket && !@@socket.closed?
+    @@socket = nil
+  end
+
   # Spawns a long-running section of code and returns the ID of the spawned process.
   # By default the process will be a forked process.   To use threading, pass
   # :method => :thread or override the default behavior in the environment by setting
@@ -21,6 +35,7 @@ module Spawn
     options.symbolize_keys!
     # setting options[:method] will override configured value in @@method
     if options[:method] == :yield || @@method == :yield
+      logger.debug "spawn> yielding"
       yield
     elsif options[:method] == :thread || (options[:method] == nil && @@method == :thread)
       if ActiveRecord::Base.allow_concurrency
@@ -64,23 +79,27 @@ module Spawn
   def fork_it(options)
     # The problem with rails is that it only has one connection (per class),
     # so when we fork a new process, we need to reconnect.
+    logger.debug "spawn> parent PID = #{Process.pid}"
     child = fork do
-      # call the method we added in patches.rb to allow the child to get a new connection
-      # without messing with the parent's connection
-      ActiveRecord::Base.reconnect_in_child
+      # disconnect from the listening socket
+      Spawn.close_socket
+      # get a new connection so the parent can keep the original one
+      ActiveRecord::Base.spawn_reconnect
       begin
         # run the block of code that takes so long
+        logger.debug "spawn> child PID = #{Process.pid}"
+        start = Time.now
         yield
+        logger.info "spawn> child[#{Process.pid}] took #{(Time.now - start).round(3)} sec"
       ensure
-        ActiveRecord::Base.connection.disconnect!
-        ActiveRecord::Base.remove_connection
       end
       # this form of exit doesn't call at_exit handlers
       exit!
     end
+    
     # detach from child process (parent may still wait for detached process if they wish)
     Process.detach(child)
-    # reconnect in the parent process
+
     return SpawnId.new(:fork, child)
   end
 
