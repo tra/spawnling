@@ -81,6 +81,7 @@ module Spawn
     # so when we fork a new process, we need to reconnect.
     logger.debug "spawn> parent PID = #{Process.pid}"
     child = fork do
+      start = Time.now
       # disconnect from the listening socket
       Spawn.close_socket
       # get a new connection so the parent can keep the original one
@@ -88,11 +89,10 @@ module Spawn
       begin
         # run the block of code that takes so long
         logger.debug "spawn> child PID = #{Process.pid}"
-        start = Time.now
         yield
-        logger.info "spawn> child[#{Process.pid}] took #{(Time.now - start)*100.round/100} sec"
       ensure
       end
+      logger.info "spawn> child[#{Process.pid}] took #{Time.now - start} sec"
       # this form of exit doesn't call at_exit handlers
       exit!(0)
     end
