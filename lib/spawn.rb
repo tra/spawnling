@@ -90,11 +90,11 @@ module Spawn
         logger.debug "spawn> child PID = #{Process.pid}"
         start = Time.now
         yield
-        logger.info "spawn> child[#{Process.pid}] took #{(Time.now - start).round(3)} sec"
+        logger.info "spawn> child[#{Process.pid}] took #{(Time.now - start)*100.round/100} sec"
       ensure
       end
       # this form of exit doesn't call at_exit handlers
-      exit!
+      exit!(0)
     end
     
     # detach from child process (parent may still wait for detached process if they wish)
