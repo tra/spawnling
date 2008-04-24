@@ -3,7 +3,7 @@ module Spawn
   # default to forking (unless windows or jruby)
   @@method = (RUBY_PLATFORM =~ /(win32|java)/) ? :thread : :fork
   # socket to close in child process
-  @@socket = nil
+  @@resources = []
 
   # add calls to this in your environment.rb to set your configuration, for example,
   # to use forking everywhere except your 'development' environment:
@@ -16,15 +16,17 @@ module Spawn
     RAILS_DEFAULT_LOGGER.debug "spawn> method = #{@@method}" if defined? RAILS_DEFAULT_LOGGER
   end
 
-  # set the socket to disconnect from in the child process (when forking)
-  def self.socket=(socket)
-    @@socket = socket
+  # set the resource to disconnect from in the child process (when forking)
+  def self.resource_to_close(resource)
+    @@resources << resource
   end
 
-  # close the socket set in socket=
-  def self.close_socket
-    @@socket.close if @@socket && !@@socket.closed?
-    @@socket = nil
+  # close all the resources added by calls to resource_to_close
+  def self.close_resources
+    @@resources.each do |resource|
+      resource.close if resource && resource.respond_to?(:close)
+    end
+    @@resources = []
   end
 
   # Spawns a long-running section of code and returns the ID of the spawned process.
@@ -35,7 +37,6 @@ module Spawn
     options.symbolize_keys!
     # setting options[:method] will override configured value in @@method
     if options[:method] == :yield || @@method == :yield
-      logger.debug "spawn> yielding"
       yield
     elsif options[:method] == :thread || (options[:method] == nil && @@method == :thread)
       if ActiveRecord::Base.allow_concurrency
@@ -82,8 +83,8 @@ module Spawn
     logger.debug "spawn> parent PID = #{Process.pid}"
     child = fork do
       start = Time.now
-      # disconnect from the listening socket
-      Spawn.close_socket
+      # disconnect from the listening socket, et al
+      Spawn.close_resources
       # get a new connection so the parent can keep the original one
       ActiveRecord::Base.spawn_reconnect
       begin

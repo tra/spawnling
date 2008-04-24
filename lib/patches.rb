@@ -40,12 +40,17 @@ class ActiveRecord::Base
 end
 
 # see mongrel/lib/mongrel.rb
-class Mongrel::HttpServer
-  # redefine Montrel::HttpServer::process_client so that we can intercept
-  # the socket that is being used so Spawn can close it upon forking
-  alias_method :orig_process_client, :process_client
-  def process_client(socket)
-    Spawn.socket = socket
-    orig_process_client(socket)
+# it's possible that this is not defined if you're running outside of mongrel
+# examples: ./script/runner or ./script/console
+if defined? Mongrel::HttpServer
+  class Mongrel::HttpServer
+    # redefine Montrel::HttpServer::process_client so that we can intercept
+    # the socket that is being used so Spawn can close it upon forking
+    alias_method :orig_process_client, :process_client
+    def process_client(client)
+      Spawn.resource_to_close(client)
+      Spawn.resource_to_close(@socket)
+      orig_process_client(client)
+    end
   end
 end

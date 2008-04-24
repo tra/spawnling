@@ -37,3 +37,6 @@ v0.6 - 2008/04/21
 * made it more responsive in more environments by disconnecting from the listener socket in the forked process
 
 --------------------------------------------------
+v0.7 - 2008/04/24
+* more generic mechanism for closing resources after fork
+* check for existence of Mongrel before patching it
