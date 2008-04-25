@@ -24,7 +24,7 @@ module Spawn
   # close all the resources added by calls to resource_to_close
   def self.close_resources
     @@resources.each do |resource|
-      resource.close if resource && resource.respond_to?(:close)
+      resource.close if resource && resource.respond_to?(:close) && !resource.closed?
     end
     @@resources = []
   end
