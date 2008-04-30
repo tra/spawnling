@@ -92,6 +92,8 @@ module Spawn
         logger.debug "spawn> child PID = #{Process.pid}"
         yield
       ensure
+        ActiveRecord::Base.connection.disconnect!
+        ActiveRecord::Base.remove_connection
       end
       logger.info "spawn> child[#{Process.pid}] took #{Time.now - start} sec"
       # this form of exit doesn't call at_exit handlers
