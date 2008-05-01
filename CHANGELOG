@@ -40,3 +40,8 @@ v0.6 - 2008/04/21
 v0.7 - 2008/04/24
 * more generic mechanism for closing resources after fork
 * check for existence of Mongrel before patching it
+
+--------------------------------------------------
+v0.8 - 2008/05/soon
+* call exit! within the ensure block so that at_exit handlers aren't called on exceptions
+* use RAILS_DEFAULT_LOGGER everywhere
