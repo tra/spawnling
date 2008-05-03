@@ -42,6 +42,6 @@ v0.7 - 2008/04/24
 * check for existence of Mongrel before patching it
 
 --------------------------------------------------
-v0.8 - 2008/05/soon
+v0.8 - 2008/05/02
 * call exit! within the ensure block so that at_exit handlers aren't called on exceptions
-* use RAILS_DEFAULT_LOGGER everywhere
+* set logger from RAILS_DEFAULT_LOGGER if available, else STDERR
