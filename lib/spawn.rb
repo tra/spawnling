@@ -4,7 +4,8 @@ module Spawn
   @@method = (RUBY_PLATFORM =~ /(win32|java)/) ? :thread : :fork
   # socket to close in child process
   @@resources = []
-  @@logger = RAILS_DEFAULT_LOGGER
+  # in some environments, logger isn't defined
+  @@logger = defined?(RAILS_DEFAULT_LOGGER) ? RAILS_DEFAULT_LOGGER : Logger.new(STDERR)
 
   # add calls to this in your environment.rb to set your configuration, for example,
   # to use forking everywhere except your 'development' environment:
