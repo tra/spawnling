@@ -45,3 +45,7 @@ v0.7 - 2008/04/24
 v0.8 - 2008/05/02
 * call exit! within the ensure block so that at_exit handlers aren't called on exceptions
 * set logger from RAILS_DEFAULT_LOGGER if available, else STDERR
+
+--------------------------------------------------
+v0.9 - 2008/05/11
+* added ability to set nice level for child process

@@ -87,12 +87,18 @@ module Spawn
       begin
         start = Time.now
         @@logger.debug "spawn> child PID = #{Process.pid}"
+
+        # set the nice priority if needed
+        Process.setpriority(Process::PRIO_PROCESS, 0, options[:nice]) if options[:nice]
+
         # disconnect from the listening socket, et al
         Spawn.close_resources
         # get a new connection so the parent can keep the original one
         ActiveRecord::Base.spawn_reconnect
+
         # run the block of code that takes so long
         yield
+
       rescue => ex
         @@logger.error "spawn> Exception in child[#{Process.pid}] - #{ex.class}: #{ex.message}"
       ensure

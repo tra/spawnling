@@ -36,6 +36,13 @@ spawn to Spawn::wait(), like this:
   # wait for all N blocks of code to finish running
   wait(spawn_ids)
 
+If you want your forked child to run at a lower priority than the parent process, pass in
+the :nice option like this:
+
+  spawn(:nice => 7) do
+    do_something_nicely
+  end
+
 By default, spawn will use the fork to spawn child processes.  You can configure it to
 do threading either by telling the spawn method when you call it or by configuring your
 environment.
@@ -104,7 +111,7 @@ blog post on threading in rails.
     http://bibwild.wordpress.com/2007/08/28/threading-in-rails/
     
 Also thanks to all who have helped debug problems and suggest improvements including:
-  Ahmed Adam, Tristan Schneiter, Scott Haug, Andrew Garfield, Eugene Otto, <your name here>
-
+  Ahmed Adam, Tristan Schneiter, Scott Haug, Andrew Garfield, Eugene Otto, Dan Sharp,
+  <your name here>
 
 Copyright (c) 2007-08 Tom Anderson (tom@squeat.com), see LICENSE
