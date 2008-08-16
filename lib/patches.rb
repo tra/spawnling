@@ -19,7 +19,7 @@ class ActiveRecord::Base
   end
 
   # this patch not needed on Rails 2.x and later
-  if Rails::VERSION::MAJOR == 1
+  if ::Rails::VERSION::MAJOR == 1
     # monkey patch to fix threading problems,
     # see: http://dev.rubyonrails.org/ticket/7579
     def self.clear_reloadable_connections!
