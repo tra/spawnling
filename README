@@ -1,12 +1,3 @@
-Garry Tan's Fork of Spawn
-========================
-Dec 28, 2008: Spawn did not work correctly for Rails 2.2.2 due to new connection pooling.
-The related code in this fork now works properly for Rails 2.2.x+ while maintaining backwards 
-compatibility with older Rails 1.x, 2.0.x, and 2.1.x.
-
-========================
-
-
 Spawn
 =====
 
@@ -121,6 +112,7 @@ blog post on threading in rails.
     
 Also thanks to all who have helped debug problems and suggest improvements including:
   Ahmed Adam, Tristan Schneiter, Scott Haug, Andrew Garfield, Eugene Otto, Dan Sharp,
+  Garry Tan (2.2.x fixes)
   <your name here>
 
 Copyright (c) 2007-08 Tom Anderson (tom@squeat.com), see LICENSE
