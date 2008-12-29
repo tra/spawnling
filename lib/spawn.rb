@@ -104,8 +104,12 @@ module Spawn
       ensure
         begin
           # to be safe, catch errors on closing the connnections too
-          ActiveRecord::Base.connection.disconnect!
-          ActiveRecord::Base.remove_connection
+          if Rails::VERSION::MAJOR >= 2 && Rails::VERSION::MINOR >= 2
+            ActiveRecord::Base.connection_handler.clear_all_connections!
+          else
+            ActiveRecord::Base.connection.disconnect!
+            ActiveRecord::Base.remove_connection
+          end
         ensure
           @@logger.info "spawn> child[#{Process.pid}] took #{Time.now - start} sec"
           # this form of exit doesn't call at_exit handlers
