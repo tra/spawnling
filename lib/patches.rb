@@ -1,14 +1,21 @@
 # see activerecord/lib/active_record/connection_adaptors/abstract/connection_specification.rb
 class ActiveRecord::Base
-  # reconnect without diconnecting
-  def self.spawn_reconnect(klass=self)
-    spec = @@defined_connections[klass.name]
-    konn = active_connections[klass.name]
-    # remove from internal arrays before calling establish_connection so that
-    # the connection isn't disconnected when it calls AR::Base.remove_connection
-    @@defined_connections.delete_if { |key, value| value == spec }
-    active_connections.delete_if { |key, value| value == konn }
-    establish_connection(spec ? spec.config : nil)
+  # reconnect without disconnecting
+  if Rails::VERSION::MAJOR == 2 && Rails::VERSION::MINOR >= 2
+    def self.spawn_reconnect(klass=self)
+      @@connection_handler = ActiveRecord::ConnectionAdapters::ConnectionHandler.new
+      establish_connection
+    end
+  else
+    def self.spawn_reconnect(klass=self)
+      spec = @@defined_connections[klass.name]
+      konn = active_connections[klass.name]
+      # remove from internal arrays before calling establish_connection so that
+      # the connection isn't disconnected when it calls AR::Base.remove_connection
+      @@defined_connections.delete_if { |key, value| value == spec }
+      active_connections.delete_if { |key, value| value == konn }
+      establish_connection(spec ? spec.config : nil)
+    end
   end
 
   # this patch not needed on Rails 2.x and later
