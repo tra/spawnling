@@ -1,7 +1,7 @@
 # see activerecord/lib/active_record/connection_adaptors/abstract/connection_specification.rb
 class ActiveRecord::Base
   # reconnect without disconnecting
-  if Rails::VERSION::MAJOR == 2 && Rails::VERSION::MINOR >= 2
+  if Spawn::RAILS_2_2
     def self.spawn_reconnect(klass=self)
       @@connection_handler = ActiveRecord::ConnectionAdapters::ConnectionHandler.new
       establish_connection
@@ -19,7 +19,7 @@ class ActiveRecord::Base
   end
 
   # this patch not needed on Rails 2.x and later
-  if ::Rails::VERSION::MAJOR == 1
+  if Spawn::RAILS_1_x
     # monkey patch to fix threading problems,
     # see: http://dev.rubyonrails.org/ticket/7579
     def self.clear_reloadable_connections!
