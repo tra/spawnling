@@ -1,4 +1,6 @@
 module Spawn
+  RAILS_1_x = (::Rails::VERSION::MAJOR == 1)
+  RAILS_2_2 = (::Rails::VERSION::MAJOR > 2 || (::Rails::VERSION::MAJOR == 2 && ::Rails::VERSION::MINOR >= 2))
 
   # default to forking (unless windows or jruby)
   @@method = (RUBY_PLATFORM =~ /(win32|java)/) ? :thread : :fork
@@ -42,7 +44,7 @@ module Spawn
       yield
     elsif options[:method] == :thread || (options[:method] == nil && @@method == :thread)
       # for versions before 2.2, check for allow_concurrency
-      if Rails::VERSION::MAJOR > 2 || (Rails::VERSION::MAJOR == 2 && Rails::VERSION::MINOR >= 2) || ActiveRecord::Base.allow_concurrency
+      if RAILS_2_2 || ActiveRecord::Base.allow_concurrency
         thread_it(options) { yield }
       else
         @@logger.error("spawn(:method=>:thread) only allowed when allow_concurrency=true")
@@ -105,7 +107,7 @@ module Spawn
       ensure
         begin
           # to be safe, catch errors on closing the connnections too
-          if Rails::VERSION::MAJOR >= 2 && Rails::VERSION::MINOR >= 2
+          if RAILS_2_2
             ActiveRecord::Base.connection_handler.clear_all_connections!
           else
             ActiveRecord::Base.connection.disconnect!
