@@ -1,6 +1,6 @@
 module Spawn
-  RAILS_1_x = (::Rails::VERSION::MAJOR == 1)
-  RAILS_2_2 = (::Rails::VERSION::MAJOR > 2 || (::Rails::VERSION::MAJOR == 2 && ::Rails::VERSION::MINOR >= 2))
+  RAILS_1_x = (::Rails::VERSION::MAJOR == 1) unless defined?(RAILS_1_x)
+  RAILS_2_2 = (::Rails::VERSION::MAJOR > 2 || (::Rails::VERSION::MAJOR == 2 && ::Rails::VERSION::MINOR >= 2)) unless defined?(RAILS_2_2)
 
   # default to forking (unless windows or jruby)
   @@method = (RUBY_PLATFORM =~ /(win32|java)/) ? :thread : :fork
