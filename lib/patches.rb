@@ -61,10 +61,22 @@ if defined? Mongrel::HttpServer
     end
   end
 end
- 
-# Patch for work with passenger
+
+# Patch for work with passenger < 2.1.0
 if defined? Passenger::Railz::RequestHandler
   class Passenger::Railz::RequestHandler
+    alias_method :orig_process_request, :process_request
+    def process_request(headers, input, output)
+      Spawn.resource_to_close(input)
+      Spawn.resource_to_close(output)
+      orig_process_request(headers, input, output)
+    end
+  end
+end
+
+# Patch for work with passenger >= 2.1.0
+if defined? PhussionPassenger::Railz::RequestHandler
+  class PhussionPassenger::Railz::RequestHandler
     alias_method :orig_process_request, :process_request
     def process_request(headers, input, output)
       Spawn.resource_to_close(input)
