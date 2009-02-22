@@ -4,8 +4,8 @@ module Spawn
 
   # default to forking (unless windows or jruby)
   @@method = (RUBY_PLATFORM =~ /(win32|java)/) ? :thread : :fork
-  # socket to close in child process
-  @@resources = []
+  # things to close in child process
+  @@resources = SortedSet.new
   # in some environments, logger isn't defined
   @@logger = defined?(RAILS_DEFAULT_LOGGER) ? RAILS_DEFAULT_LOGGER : Logger.new(STDERR)
 
@@ -30,7 +30,6 @@ module Spawn
     @@resources.each do |resource|
       resource.close if resource && resource.respond_to?(:close) && !resource.closed?
     end
-    @@resources = []
   end
 
   # Spawns a long-running section of code and returns the ID of the spawned process.
