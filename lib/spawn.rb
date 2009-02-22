@@ -30,6 +30,8 @@ module Spawn
     @@resources.each do |resource|
       resource.close if resource && resource.respond_to?(:close) && !resource.closed?
     end
+    # in case somebody spawns recursively
+    @@resources.clear
   end
 
   # Spawns a long-running section of code and returns the ID of the spawned process.
