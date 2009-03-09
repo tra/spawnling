@@ -61,7 +61,7 @@ if defined? Mongrel::HttpServer
     end
   end
 end
-
+ 
 # Patch for work with passenger
 if defined? Passenger::Railz::RequestHandler
   class Passenger::Railz::RequestHandler

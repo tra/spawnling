@@ -113,6 +113,8 @@ blog post on threading in rails.
 Also thanks to all who have helped debug problems and suggest improvements including:
   Ahmed Adam, Tristan Schneiter, Scott Haug, Andrew Garfield, Eugene Otto, Dan Sharp,
   Garry Tan (2.2.x fixes)
+  Tim Kadom, Mauricio Marcon Zaffari (passenger fixes)
   <your name here>
 
 Copyright (c) 2007-08 Tom Anderson (tom@squeat.com), see LICENSE
+>
