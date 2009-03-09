@@ -114,7 +114,11 @@ Also thanks to all who have helped debug problems and suggest improvements inclu
   Ahmed Adam, Tristan Schneiter, Scott Haug, Andrew Garfield, Eugene Otto, Dan Sharp,
   Olivier Ruffin
   Garry Tan, Matt Jankowski (2.2.x fixes)
+<<<<<<< HEAD:README
   Tim Kadom, Mauricio Marcon Zaffari, Hongli Lai (passenger fixes)
+=======
+  Tim Kadom, Mauricio Marcon Zaffari, Danial Pearce, Hongli Lai (passenger fixes)
+>>>>>>> b7b3c90bb6c6b527ad8fc9537db0f5fbbc524ff9:README
   <your name here>
 
 Copyright (c) 2007-present Tom Anderson (tom@squeat.com), see LICENSE
