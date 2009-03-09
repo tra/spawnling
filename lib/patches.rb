@@ -55,8 +55,7 @@ if defined? Mongrel::HttpServer
     # the socket that is being used so Spawn can close it upon forking
     alias_method :orig_process_client, :process_client
     def process_client(client)
-      Spawn.resource_to_close(client)
-      Spawn.resource_to_close(@socket)
+      Spawn.resources_to_close(client, @socket)
       orig_process_client(client)
     end
   end
@@ -67,8 +66,7 @@ if defined? Passenger::Railz::RequestHandler
   class Passenger::Railz::RequestHandler
     alias_method :orig_process_request, :process_request
     def process_request(headers, input, output)
-      Spawn.resource_to_close(input)
-      Spawn.resource_to_close(output)
+      Spawn.resources_to_close(input, output)
       orig_process_request(headers, input, output)
     end
   end

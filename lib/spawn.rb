@@ -5,7 +5,7 @@ module Spawn
   # default to forking (unless windows or jruby)
   @@method = (RUBY_PLATFORM =~ /(win32|java)/) ? :thread : :fork
   # things to close in child process
-  @@resources = SortedSet.new
+  @@resources = []
   # in some environments, logger isn't defined
   @@logger = defined?(RAILS_DEFAULT_LOGGER) ? RAILS_DEFAULT_LOGGER : Logger.new(STDERR)
 
@@ -20,9 +20,9 @@ module Spawn
     @@logger.debug "spawn> method = #{@@method}" if defined? RAILS_DEFAULT_LOGGER
   end
 
-  # set the resource to disconnect from in the child process (when forking)
-  def self.resource_to_close(resource)
-    @@resources << resource
+  # set the resources to disconnect from in the child process (when forking)
+  def self.resources_to_close(*resources)
+    @@resources = resources
   end
 
   # close all the resources added by calls to resource_to_close
@@ -119,7 +119,7 @@ module Spawn
         end
       end
     end
-    
+
     # detach from child process (parent may still wait for detached process if they wish)
     Process.detach(child)
 
