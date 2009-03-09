@@ -84,6 +84,7 @@ if defined? PhusionPassenger::Railz::RequestHandler
   end
 end
 
+# Patch for work with passenger
 if defined? Passenger::Railz::RequestHandler
   class Passenger::Railz::RequestHandler
     alias_method :orig_process_request, :process_request
@@ -93,4 +94,4 @@ if defined? Passenger::Railz::RequestHandler
       orig_process_request(headers, input, output)
     end
   end
-end 
+end
