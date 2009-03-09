@@ -5,7 +5,7 @@ module Spawn
   # default to forking (unless windows or jruby)
   @@method = (RUBY_PLATFORM =~ /(win32|java)/) ? :thread : :fork
   # things to close in child process
-  @@resources = SortedSet.new
+  @@resources = []
   # in some environments, logger isn't defined
   @@logger = defined?(RAILS_DEFAULT_LOGGER) ? RAILS_DEFAULT_LOGGER : Logger.new(STDERR)
 

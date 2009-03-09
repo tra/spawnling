@@ -67,6 +67,7 @@ if defined? Passenger::Railz::RequestHandler
     alias_method :orig_process_request, :process_request
     def process_request(headers, input, output)
       Spawn.resources_to_close(input, output)
+<<<<<<< HEAD:lib/patches.rb
       orig_process_request(headers, input, output)
     end
   end
