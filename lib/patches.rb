@@ -97,8 +97,8 @@ if defined? Passenger::Railz::RequestHandler
 end
 
 # Patch for work with passenger >= 2.1.0
-if defined? PhussionPassenger::Railz::RequestHandler
-  class PhussionPassenger::Railz::RequestHandler
+if defined? PhusionPassenger::Railz::RequestHandler
+  class PhusionPassenger::Railz::RequestHandler
     alias_method :orig_process_request, :process_request
     def process_request(headers, input, output)
       Spawn.resource_to_close(input)
