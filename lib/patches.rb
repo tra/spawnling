@@ -82,3 +82,14 @@ if defined? PhusionPassenger::Railz::RequestHandler
     end
   end
 end
+
+# Patch for passenger with Rails >= 2.3.0 (uses rack)
+if defined? PhusionPassenger::Rack::RequestHandler
+  class PhusionPassenger::Rack::RequestHandler
+    alias_method :orig_process_request, :process_request
+    def process_request(headers, input, output)
+      Spawn.resources_to_close(input, output)
+      orig_process_request(headers, input, output)
+    end
+  end
+end
