@@ -116,6 +116,8 @@ module Spawn
           end
         ensure
           @@logger.info "spawn> child[#{Process.pid}] took #{Time.now - start} sec"
+          # ensure log is flushed since we are using exit!
+          @@logger.flush if @@logger.respond_to?(:flush)
           # this form of exit doesn't call at_exit handlers
           exit!(0)
         end
