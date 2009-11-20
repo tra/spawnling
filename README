@@ -115,6 +115,7 @@ Also thanks to all who have helped debug problems and suggest improvements inclu
   Olivier Ruffin
   Garry Tan, Matt Jankowski (Rails 2.2.x fixes)
   Tim Kadom, Mauricio Marcon Zaffari, Danial Pearce, Hongli Lai, Scott Wadden (passenger fixes)
+  Adrian Duyzer, Cyrille Labesse
   <your name here>
 
 Copyright (c) 2007-present Tom Anderson (tom@squeat.com), see LICENSE

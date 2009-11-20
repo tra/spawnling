@@ -41,7 +41,7 @@ module Spawn
   def spawn(options = {})
     options.symbolize_keys!
     # setting options[:method] will override configured value in @@method
-    if options[:method] == :yield || @@method == :yield
+    if options[:method] == :yield || (options[:method] == nil && @@method == :yield)
       yield
     elsif options[:method] == :thread || (options[:method] == nil && @@method == :thread)
       # for versions before 2.2, check for allow_concurrency
