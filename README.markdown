@@ -124,8 +124,7 @@ Threading advantages:
   be as big as you think... but then again, maybe it's more than you think.  ;-)
 - debugging - you can set breakpoints in your threads
 
-Acknowledgements
-----------------
+## Acknowledgements
 
 This plugin was initially inspired by Scott Persinger's blog post on how to use fork
 in rails for background processing.
@@ -138,14 +137,14 @@ blog post on threading in rails.
 Also thanks to all who have helped debug problems and suggest improvements
 including:
 
-  Ahmed Adam, Tristan Schneiter, Scott Haug, Andrew Garfield, Eugene Otto, Dan Sharp,
+-  Ahmed Adam, Tristan Schneiter, Scott Haug, Andrew Garfield, Eugene Otto, Dan Sharp,
   Olivier Ruffin, Adrian Duyzer, Cyrille Labesse
 
-  Garry Tan, Matt Jankowski (Rails 2.2.x fixes)
+-  Garry Tan, Matt Jankowski (Rails 2.2.x fixes)
 
-  Tim Kadom, Mauricio Marcon Zaffari, Danial Pearce, Hongli Lai, Scott Wadden
+-  Tim Kadom, Mauricio Marcon Zaffari, Danial Pearce, Hongli Lai, Scott Wadden
   (passenger fixes)
 
-  <your name here>
+-  <your name here>
 
 Copyright (c) 2007-present Tom Anderson (tom@squeat.com), see LICENSE
