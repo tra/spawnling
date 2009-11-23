@@ -161,6 +161,6 @@ including:
 -  Tim Kadom, Mauricio Marcon Zaffari, Danial Pearce, Hongli Lai, Scott Wadden
   (passenger fixes)
 
--  <your name here>
+-  &lt;your name here&gt;
 
 Copyright (c) 2007-present Tom Anderson (tom@squeat.com), see LICENSE
