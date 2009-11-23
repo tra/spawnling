@@ -8,6 +8,16 @@ spawned block.
 The plugin also patches ActiveRecord::Base to handle some known bugs when using 
 threads (see lib/patches.rb).
 
+## Installation
+
+To install the plugin from the master branch (recommended).
+
+    script/plugin install git://github.com/tra/spawn.git
+
+If you want to install the plugin from the 'edge' branch (latest development):
+
+    script/plugin install git://github.com/tra/spawn.git -r edge
+
 ## Usage
 
 Here's a simple example of how to demonstrate the spawn plugin.
