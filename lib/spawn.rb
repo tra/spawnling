@@ -2,22 +2,45 @@ module Spawn
   RAILS_1_x = (::Rails::VERSION::MAJOR == 1) unless defined?(RAILS_1_x)
   RAILS_2_2 = (::Rails::VERSION::MAJOR > 2 || (::Rails::VERSION::MAJOR == 2 && ::Rails::VERSION::MINOR >= 2)) unless defined?(RAILS_2_2)
 
-  # default to forking (unless windows or jruby)
-  @@method = (RUBY_PLATFORM =~ /(win32|java)/) ? :thread : :fork
+  @@default_options = {
+    # default to forking (unless windows or jruby)
+    :method => ((RUBY_PLATFORM =~ /(win32|java)/) ? :thread : :fork),
+    :nice => nil,
+    :kill => false
+  }
+  
   # things to close in child process
   @@resources = []
   # in some environments, logger isn't defined
   @@logger = defined?(RAILS_DEFAULT_LOGGER) ? RAILS_DEFAULT_LOGGER : Logger.new(STDERR)
+  # forked children to kill on exit
+  @@punks = []
 
+  # Set the options to use every time spawn is called unless specified
+  # otherwise.  For example, in your environment, do something like
+  # this:
+  #   Spawn::default_options = {:nice => 5}
+  # to default to using the :nice option with a value of 5 on every call.
+  # Valid options are:
+  #   :method => (:thread | :fork | :yield)
+  #   :nice   => nice value of the forked process
+  #   :kill   => whether or not the parent process will kill the
+  #              spawned child process when the parent exits
+  def self.default_options(options = {})
+    @@default_options.merge!(options)
+    @@logger.info "spawn> default options = #{options.inspect}"
+  end
+
+  # @deprecated - please use Spawn::default_options(:method => ) instead
   # add calls to this in your environment.rb to set your configuration, for example,
   # to use forking everywhere except your 'development' environment:
   #   Spawn::method :fork
   #   Spawn::method :thread, 'development'
   def self.method(method, env = nil)
+    @@logger.warn "spawn> please use Spawn::default_options(:method => #{method}) instead of Spawn::method"
     if !env || env == RAILS_ENV
-      @@method = method
+      default_options :method => method
     end
-    @@logger.debug "spawn> method = #{@@method}" if defined? RAILS_DEFAULT_LOGGER
   end
 
   # set the resources to disconnect from in the child process (when forking)
@@ -33,17 +56,42 @@ module Spawn
     # in case somebody spawns recursively
     @@resources.clear
   end
+  
+  def self.alive?(pid)
+    begin
+      Process::kill 0, pid
+      # if the process is alive then kill won't throw an exception
+      true
+    rescue Errno::ESRCH
+      false
+    end
+  end
+  
+  def self.kill_punks
+    @@punks.each do |punk|
+      if alive?(punk)
+        @@logger.info "spawn> parent(#{Process.pid}) killing child(#{punk})"
+        begin
+          Process.kill("TERM", punk)
+        rescue
+        end
+      end
+    end
+    @@punks = []
+  end
+  # register to kill marked children when parent exits
+  at_exit {kill_punks}
 
   # Spawns a long-running section of code and returns the ID of the spawned process.
   # By default the process will be a forked process.   To use threading, pass
   # :method => :thread or override the default behavior in the environment by setting
   # 'Spawn::method :thread'.
-  def spawn(options = {})
-    options.symbolize_keys!
-    # setting options[:method] will override configured value in @@method
-    if options[:method] == :yield || (options[:method] == nil && @@method == :yield)
+  def spawn(opts = {})
+    options = @@default_options.merge(opts.symbolize_keys)
+    # setting options[:method] will override configured value in default_options[:method]
+    if options[:method] == :yield
       yield
-    elsif options[:method] == :thread || (options[:method] == nil && @@method == :thread)
+    elsif options[:method] == :thread
       # for versions before 2.2, check for allow_concurrency
       if RAILS_2_2 || ActiveRecord::Base.allow_concurrency
         thread_it(options) { yield }
@@ -92,6 +140,9 @@ module Spawn
         start = Time.now
         @@logger.debug "spawn> child PID = #{Process.pid}"
 
+        # this child has no children of it's own to kill (yet)
+        @@punks = []
+
         # set the nice priority if needed
         Process.setpriority(Process::PRIO_PROCESS, 0, options[:nice]) if options[:nice]
 
@@ -118,6 +169,8 @@ module Spawn
           @@logger.info "spawn> child[#{Process.pid}] took #{Time.now - start} sec"
           # ensure log is flushed since we are using exit!
           @@logger.flush if @@logger.respond_to?(:flush)
+          # this child might also have children to kill if it called spawn
+          Spawn::kill_punks
           # this form of exit doesn't call at_exit handlers
           exit!(0)
         end
@@ -126,6 +179,15 @@ module Spawn
 
     # detach from child process (parent may still wait for detached process if they wish)
     Process.detach(child)
+
+    # remove dead children from the target list to avoid memory leaks
+    @@punks.delete_if {|punk| !Spawn::alive?(punk)}
+
+    # mark this child for death when this process dies
+    if options[:kill]
+      @@punks << child
+      @@logger.debug "spawn> death row = #{@@punks.inspect}"
+    end
 
     return SpawnId.new(:fork, child)
   end
