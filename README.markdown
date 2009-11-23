@@ -18,6 +18,12 @@ If you want to install the plugin from the 'edge' branch (latest development):
 
     script/plugin install git://github.com/tra/spawn.git -r edge
 
+If you are unfortunate enough to be stuck on Rails 1.x, then it is recommended you
+stick with v1.0 of this plugin (Rails 1.x won't be supported in future versions but
+it might still work if you're lucky).   To install this version:
+
+    script/plugin install git://github.com/tra/spawn.git -r master:v1.0
+
 ## Usage
 
 Here's a simple example of how to demonstrate the spawn plugin.
