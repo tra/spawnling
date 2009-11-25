@@ -5,8 +5,9 @@ module Spawn
   @@default_options = {
     # default to forking (unless windows or jruby)
     :method => ((RUBY_PLATFORM =~ /(win32|java)/) ? :thread : :fork),
-    :nice => nil,
-    :kill => false
+    :nice   => nil,
+    :kill   => false,
+    :argv   => nil
   }
   
   # things to close in child process
@@ -26,6 +27,7 @@ module Spawn
   #   :nice   => nice value of the forked process
   #   :kill   => whether or not the parent process will kill the
   #              spawned child process when the parent exits
+  #   :argv   => changes name of the spawned process as seen in ps
   def self.default_options(options = {})
     @@default_options.merge!(options)
     @@logger.info "spawn> default options = #{options.inspect}"
@@ -150,6 +152,9 @@ module Spawn
         Spawn.close_resources
         # get a new connection so the parent can keep the original one
         ActiveRecord::Base.spawn_reconnect
+        
+        # set the process name
+        $0 = options[:argv] if options[:argv]
 
         # run the block of code that takes so long
         yield

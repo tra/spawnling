@@ -60,6 +60,7 @@ The options you can pass to spawn are:
   <tr><td>:nice</td><td>integer value 0-19, 19 = really nice</td></tr>
   <tr><td>:kill</td><td>boolean value indicating whether the parent should kill the spawned process
    when it exits (only valid when :method => :fork)</td></tr>
+  <tr><td>:argv</td><td>string to override the process name</td></tr>
 </table>
 
 Any option to spawn can be set as a default so that you don't have to pass them in
@@ -116,6 +117,31 @@ the parent  process exits.   By default spawn lets the children live after the
 parent dies.   But you can tell it to kill the children by setting the :kill option
 to true.
 
+### a process by any other name
+
+If you'd like to be able to identify which processes are spawned by looking at the
+output of ps then set the :argv option with a string of your choice.
+You should then be able to see this string as the process name when
+listing the running processes (ps).
+
+For example, if you do something like this,
+
+    3.times do |i|
+      spawn(:argv => "spawn -#{i}-") do
+        something(i)
+      end
+    end
+
+then in the shell,
+
+    $ ps -ef | grep spawn
+    502  2645  2642   0   0:00.01 ttys002    0:00.02 spawn -0-
+    502  2646  2642   0   0:00.02 ttys002    0:00.02 spawn -1-
+    502  2647  2642   0   0:00.02 ttys002    0:00.03 spawn -2-
+
+The length of the process name may be limited by your OS so you might want to experiment
+to see how long it can be (it may be limited by the length of the original process name).
+
 ## Forking vs. Threading
 
 There are several tradeoffs for using threading vs. forking.   Forking was chosen as the
@@ -131,7 +157,8 @@ Forking advantages:
   want to restart your server without killing the spawned processes.
   We don't necessarily condone this (i.e. haven't tried it) but it's technically possible.
 - easier - forking works out of the box with spawn, threading requires you set
-  allow_concurrency=true.   Also, beware of automatic reloading of classes in development
+  allow_concurrency=true (for older versions of Rails).
+  Also, beware of automatic reloading of classes in development
   mode (config.cache_classes = false).
 
 Threading advantages:
