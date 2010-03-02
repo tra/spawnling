@@ -41,13 +41,7 @@ module Spawn
     if options[:method] == :yield || (options[:method] == nil && @@method == :yield)
       yield
     elsif options[:method] == :thread || (options[:method] == nil && @@method == :thread)
-      # for versions before 2.2, check for allow_concurrency
-      if ActiveRecord::Base.allow_concurrency
-        thread_it(options) { yield }
-      else
-        @@logger.error("spawn(:method=>:thread) only allowed when allow_concurrency=true")
-        raise "spawn requires config.active_record.allow_concurrency=true when used with :method=>:thread"
-      end
+      thread_it(options) { yield }
     else
       fork_it(options) { yield }
     end
