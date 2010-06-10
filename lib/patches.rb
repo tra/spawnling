@@ -4,8 +4,8 @@ class ActiveRecord::Base
   if Spawn::RAILS_2_2
     def self.spawn_reconnect(klass=self)
       # keep ancestors' connection_handlers around to avoid them being garbage collected
-      (@@ancestor_connection_handlers ||= []) << @@connection_handler
-      @@connection_handler = ActiveRecord::ConnectionAdapters::ConnectionHandler.new
+      (@@ancestor_connection_handlers ||= []) << ActiveRecord::Base.connection_handler
+      ActiveRecord::Base.connection_handler = ActiveRecord::ConnectionAdapters::ConnectionHandler.new
       establish_connection
     end
   else
