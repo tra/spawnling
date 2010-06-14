@@ -183,7 +183,7 @@ including:
 -  Ahmed Adam, Tristan Schneiter, Scott Haug, Andrew Garfield, Eugene Otto, Dan Sharp,
   Olivier Ruffin, Adrian Duyzer, Cyrille Labesse
 
--  Garry Tan, Matt Jankowski (Rails 2.2.x fixes)
+-  Garry Tan, Matt Jankowski (Rails 2.2.x fixes), Mina Naguib (Rails 2.3.6 fix)
 
 -  Tim Kadom, Mauricio Marcon Zaffari, Danial Pearce, Hongli Lai, Scott Wadden
   (passenger fixes)
