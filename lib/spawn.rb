@@ -204,6 +204,7 @@ module Spawn
       # run the long-running code block
       yield
     end
+    thr.priority = -options[:nice] if options[:nice]
     return SpawnId.new(:thread, thr)
   end
 
