@@ -50,6 +50,18 @@ class ActiveRecord::Base
   end
 end
 
+# just borrowing from the mongrel & passenger patches:
+if defined? Unicorn::HttpServer
+  class Unicorn::HttpServer
+    REQ = Unicorn::HttpRequest::REQ
+    alias_method :orig_process_client, :process_client
+    def process_client(client)
+      Spawn.resources_to_close(client, REQ)
+      orig_process_client(client)
+    end
+  end
+end
+
 # see mongrel/lib/mongrel.rb
 # it's possible that this is not defined if you're running outside of mongrel
 # examples: ./script/runner or ./script/console
