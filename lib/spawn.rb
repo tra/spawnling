@@ -130,7 +130,9 @@ module Spawn
         # disconnect from the listening socket, et al
         Spawn.close_resources
         # get a new connection so the parent can keep the original one
-        ActiveRecord::Base.spawn_reconnect
+        # Old spawn did a bunch of hacks inside activerecord here. There is
+        # most likely a reason that this won't work, but I am dumb.
+        ActiveRecord::Base.connection.reconnect!
         
         # set the process name
         $0 = options[:argv] if options[:argv]
@@ -181,5 +183,4 @@ module Spawn
     thr.priority = -options[:nice] if options[:nice]
     return SpawnId.new(:thread, thr)
   end
-
 end
