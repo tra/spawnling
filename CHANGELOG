@@ -49,3 +49,7 @@ v0.8 - 2008/05/02
 --------------------------------------------------
 v0.9 - 2008/05/11
 * added ability to set nice level for child process
+
+--------------------------------------------------
+v1.0 - 2010/10/09
+* merged edged to master, let's call this version 1.0
