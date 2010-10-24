@@ -10,26 +10,27 @@ threads (see lib/patches.rb).
 
 ## Installation
 
-To install the plugin from the master branch (recommended).
+Use
 
-    script/plugin install git://github.com/tra/spawn.git
+    gem "spawn", :git => 'git://github.com/rfc2822/spawn'
 
-If you want to install the plugin from the 'edge' branch (latest development):
+in your Gemfile and use bundler to manage it (bundle install, bundle update).
 
-    script/plugin install git://github.com/tra/spawn.git -r edge
+Make sure that ActiveRecord reconnects to your database automatically when needed,
+for instance put
 
-If you are unfortunate enough to be stuck on Rails 1.x, then it is recommended you
-stick with v1.0 of this plugin (Rails 1.x won't be supported in future versions but
-it might still work if you're lucky).   To install this version:
+    production/development:
+      ...
+      reconnect: true
 
-    script/plugin install git://github.com/tra/spawn.git -r master:v1.0
+into your config/database.yml.
 
 ## Usage
 
 Here's a simple example of how to demonstrate the spawn plugin.
 In one of your controllers, insert this code (after installing the plugin of course):
 
-    spawn do
+    spawn_block do
        logger.info("I feel sleepy...")
        sleep 11
        logger.info("Time to wake up!")
@@ -43,7 +44,7 @@ spawn to Spawn::wait(), like this:
 
     N.times do |i|
       # spawn N blocks of code
-      spawn_ids[i] = spawn do
+      spawn_ids[i] = spawn_block do
         something(i)
       end
     end
@@ -52,7 +53,7 @@ spawn to Spawn::wait(), like this:
 
 ## Options
 
-The options you can pass to spawn are:
+The options you can pass to spawn_block are:
 
 <table>
   <tr><th>Option</th><th>Values</th></tr>
@@ -63,8 +64,8 @@ The options you can pass to spawn are:
   <tr><td>:argv</td><td>string to override the process name</td></tr>
 </table>
 
-Any option to spawn can be set as a default so that you don't have to pass them in
-to every call of spawn.   To configure the spawn default options, add a line to
+Any option to spawn_block can be set as a default so that you don't have to pass them in
+to every call of spawn_block.   To configure the spawn default options, add a line to
 your configuration file(s) like this: 
 
     Spawn::default_options {:method => :thread}
@@ -87,7 +88,7 @@ methods according to your needs.
 If you want your forked child to run at a lower priority than the parent process, pass in
 the :nice option like this:
 
-    spawn(:nice => 7) do
+    spawn_block(:nice => 7) do
       do_something_nicely
     end
 
@@ -98,17 +99,17 @@ do threading either by telling the spawn method when you call it or by configuri
 environment.
 For example, this is how you can tell spawn to use threading on the call,
 
-    spawn(:method => :thread) do
+    spawn_block(:method => :thread) do
       something
     end
-  
-For older versions of Rails (1.x), when using the :thread setting, spawn will check to
-make sure that you have set allow_concurrency=true in your configuration.   If you
-want this setting then put this line in one of your environment config files: 
 
-    config.active_record.allow_concurrency = true
+When you use threaded spawning, make sure that your application is thread-safe. Rails
+can be switched to thread-safe mode with
 
-If it is not set, then spawn will raise an exception.
+    # Enable threaded mode
+    config.threadsafe!
+
+in environments/your_environment.rb
 
 ### kill or be killed
 
@@ -127,7 +128,7 @@ listing the running processes (ps).
 For example, if you do something like this,
 
     3.times do |i|
-      spawn(:argv => "spawn -#{i}-") do
+      spawn_block(:argv => "spawn -#{i}-") do
         something(i)
       end
     end
