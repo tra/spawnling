@@ -105,6 +105,24 @@ module Spawn
       fork_it(options) { yield }
     end
   end
+
+    def spawn_with_limit(block, to_iterate_on, thread_titles = "default_ruby_fork_process", fork_limit = 10)
+    raise "Array required as first argument" unless to_iterate_on.class == Array
+    raise "A code block is required in order to use this method" unless block
+
+    to_iterate_on.in_groups_of(fork_limit) do |group_job|
+      fork_ids = [] # reset for each loop
+      group_job.each_with_index do |item, index|
+        fork_ids[index] = spawn(:argv => thread_titles) do
+          block.call(item)
+        end
+      end
+
+      logger.info "Wating for #{Process.pid}"
+      wait(fork_ids)
+      logger.info "Done for #{Process.pid}"
+    end
+  end
   
   def wait(sids = [])
     # wait for all threads and/or forks (if a single sid passed in, convert to array first)
