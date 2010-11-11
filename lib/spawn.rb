@@ -84,6 +84,32 @@ module Spawn
   # register to kill marked children when parent exits
   at_exit {kill_punks}
 
+ 
+  #Spawns a limited number of threads / forks and waits for the entire group to finish
+  # accepts same spawn options as spawn
+  # Robert Meyer / Dean Radcliffe 
+  def each_in_parallel_groups_of(group_size=10, spawn_opts={}, &block)
+    spawn_opts[:argv]   ||= spawn_opts[:process_label] || "default_ruby_fork_process"
+    spawn_opts[:method] ||= :fork
+    
+    raise LocalJumpError unless block_given?
+
+    self.each_slice(group_size) do |group_job|
+      fork_ids = [] # reset for each loop
+      group_job.compact.each_with_index do |item, index|
+        
+        fork_ids[index] = spawn( spawn_opts ) do
+          block.call(item)
+        end
+      end
+
+      logger.info "Wating for #{Process.pid}" if defined? logger
+      wait(fork_ids)
+      logger.info "Done for #{Process.pid}" if defined? logger
+    end
+  end
+
+
   # Spawns a long-running section of code and returns the ID of the spawned process.
   # By default the process will be a forked process.   To use threading, pass
   # :method => :thread or override the default behavior in the environment by setting
@@ -106,24 +132,6 @@ module Spawn
     end
   end
 
-    def spawn_with_limit(block, to_iterate_on, thread_titles = "default_ruby_fork_process", fork_limit = 10)
-    raise "Array required as first argument" unless to_iterate_on.class == Array
-    raise "A code block is required in order to use this method" unless block
-
-    to_iterate_on.in_groups_of(fork_limit) do |group_job|
-      fork_ids = [] # reset for each loop
-      group_job.each_with_index do |item, index|
-        fork_ids[index] = spawn(:argv => thread_titles) do
-          block.call(item)
-        end
-      end
-
-      logger.info "Wating for #{Process.pid}"
-      wait(fork_ids)
-      logger.info "Done for #{Process.pid}"
-    end
-  end
-  
   def wait(sids = [])
     # wait for all threads and/or forks (if a single sid passed in, convert to array first)
     Array(sids).each do |sid|
