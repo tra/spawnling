@@ -1,3 +1,6 @@
+require 'active_record'
+require 'action_pack'
+
 module Spawn
   RAILS_1_x = (::Rails::VERSION::MAJOR == 1) unless defined?(RAILS_1_x)
   RAILS_2_2 = (::Rails::VERSION::MAJOR > 2 || (::Rails::VERSION::MAJOR == 2 && ::Rails::VERSION::MINOR >= 2)) unless defined?(RAILS_2_2)
@@ -209,3 +212,9 @@ module Spawn
   end
 
 end
+
+require File.expand_path(File.join(File.dirname(__FILE__), 'patches'))
+
+ActiveRecord::Base.send :include, Spawn
+ActionController::Base.send :include, Spawn
+ActiveRecord::Observer.send :include, Spawn
