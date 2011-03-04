@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{spawn}
-  s.version = "1.0.1"
+  s.version = "1.0.2"
   s.required_rubygems_version = ">= 1.3.6"
 
   s.authors = ['Tom Anderson']
