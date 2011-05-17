@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.email   = ['tom@squeat.com']
   s.date = '2010-08-08'
 
-  s.homepage = %q{http://github.com/tra/spawn}
+  s.homepage = %q{http://github.com/kman-ch/spawn}
   s.summary = %q{Easily fork OR thread long-running sections of code in Ruby}
   s.description = %q{This plugin provides a 'spawn' method to easily fork OR
 thread long-running sections of code so that your application can return
