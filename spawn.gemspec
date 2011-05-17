@@ -19,10 +19,14 @@ connections in ActiveRecord::Base for the spawned block.
 The plugin also patches ActiveRecord::Base to handle some known bugs when using
 threads (see lib/patches.rb).}
 
-  exclude_folders = 'spec/rails/{doc,lib,log,nbproject,tmp,vendor,test}'
-  exclude_files = Dir['**/*.log'] + Dir[exclude_folders+'/**/*'] + Dir[exclude_folders]
-  s.files = Dir['{examples,lib,tasks,spec}/**/*'] + 
-    %w(CHANGELOG LICENSE README.markdown) - 
-    exclude_files
   s.require_paths = ["lib"]
+  s.files = %w[
+    CHANGELOG
+    LICENSE
+    README.markdown
+    lib/patches.rb
+    lib/spawn.rb
+    rails/init.rb
+    spawn.gemspec
+  ]
 end
