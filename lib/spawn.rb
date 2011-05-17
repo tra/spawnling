@@ -1,4 +1,8 @@
 module Spawn
+  RAILS_1_x = (::Rails::VERSION::MAJOR == 1) unless defined?(RAILS_1_x)
+  RAILS_2_2 = (::Rails::VERSION::MAJOR == 2 && ::Rails::VERSION::MINOR >= 2) unless defined?(RAILS_2_2)
+  RAILS_2_3_8 = (::Rails::VERSION::MAJOR > 2 || (::Rails::VERSION::MAJOR == 2 && ::Rails::VERSION::MINOR >= 3 && ::Rails::VERSION::TINY >= 8)) unless defined?(RAILS_2_3_8)
+
   @@default_options = {
     # default to forking (unless windows or jruby)
     :method => ((RUBY_PLATFORM =~ /(win32|java)/) ? :thread : :fork),
@@ -130,9 +134,7 @@ module Spawn
         # disconnect from the listening socket, et al
         Spawn.close_resources
         # get a new connection so the parent can keep the original one
-        # Old spawn did a bunch of hacks inside activerecord here. There is
-        # most likely a reason that this won't work, but I am dumb.
-        ActiveRecord::Base.connection.reconnect!
+        ActiveRecord::Base.spawn_reconnect
         
         # set the process name
         $0 = options[:argv] if options[:argv]
