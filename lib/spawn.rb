@@ -161,7 +161,7 @@ module Spawn
 
       rescue => ex
         @@logger.error "spawn> Exception in child[#{Process.pid}] - #{ex.class}: #{ex.message}"
-        @@logger.error "spawn> " + e.backtrace.join("\n")
+        @@logger.error "spawn> " + ex.backtrace.join("\n")
       ensure
         begin
           # to be safe, catch errors on closing the connnections too
