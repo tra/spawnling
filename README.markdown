@@ -10,9 +10,9 @@ threads (see lib/patches.rb).
 
 ## Installation
 
-Use
+If you want to live on the "edge"  branch (note: currently the only branch that has the gem is "edge"), then
 
-    gem "spawn", :git => 'git://github.com/tra/spawn'
+    gem "spawn", :git => 'git://github.com/tra/spawn', :branch => "edge"
 
 in your Gemfile and use bundler to manage it (bundle install, bundle update).
 
