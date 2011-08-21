@@ -5,24 +5,25 @@ code so that your application can return results to your users more quickly.
 This plugin works by creating new database connections in ActiveRecord::Base for the
 spawned block.
 
-The plugin also patches ActiveRecord::Base to handle some known bugs when using 
+The plugin also patches ActiveRecord::Base to handle some known bugs when using
 threads (see lib/patches.rb).
 
 ## Installation
 
-To install the plugin from the master branch (recommended).
+Use
 
-    script/plugin install git://github.com/tra/spawn.git
+    gem "spawn", :git => 'git://github.com/tra/spawn'
 
-If you want to install the plugin from the 'edge' branch (latest development):
+in your Gemfile and use bundler to manage it (bundle install, bundle update).
 
-    script/plugin install git://github.com/tra/spawn.git -r edge
+Make sure that ActiveRecord reconnects to your database automatically when needed,
+for instance put
 
-If you are unfortunate enough to be stuck on Rails 1.x, then it is recommended you
-stick with v1.0 of this plugin (Rails 1.x won't be supported in future versions but
-it might still work if you're lucky).   To install this version:
+    production/development:
+      ...
+      reconnect: true
 
-    script/plugin install git://github.com/tra/spawn.git -r master:v1.0
+into your config/database.yml.
 
 ## Usage
 
@@ -65,7 +66,7 @@ The options you can pass to spawn are:
 
 Any option to spawn can be set as a default so that you don't have to pass them in
 to every call of spawn.   To configure the spawn default options, add a line to
-your configuration file(s) like this: 
+your configuration file(s) like this:
 
     Spawn::default_options {:method => :thread}
 
@@ -101,14 +102,14 @@ For example, this is how you can tell spawn to use threading on the call,
     spawn(:method => :thread) do
       something
     end
-  
-For older versions of Rails (1.x), when using the :thread setting, spawn will check to
-make sure that you have set allow_concurrency=true in your configuration.   If you
-want this setting then put this line in one of your environment config files: 
 
-    config.active_record.allow_concurrency = true
+When you use threaded spawning, make sure that your application is thread-safe. Rails
+can be switched to thread-safe mode with
 
-If it is not set, then spawn will raise an exception.
+    # Enable threaded mode
+    config.threadsafe!
+
+in environments/your_environment.rb
 
 ### kill or be killed
 
@@ -162,7 +163,7 @@ Forking advantages:
   mode (config.cache_classes = false).
 
 Threading advantages:
-- less filling - threads take less resources... how much less?  it depends.   Some 
+- less filling - threads take less resources... how much less?  it depends.   Some
   flavors of Unix are pretty efficient at forking so the threading advantage may not
   be as big as you think... but then again, maybe it's more than you think.  ;-)
 - debugging - you can set breakpoints in your threads
@@ -176,7 +177,7 @@ in rails for background processing.
 Further inspiration for the threading implementation came from Jonathon Rochkind's
 blog post on threading in rails.
     http://bibwild.wordpress.com/2007/08/28/threading-in-rails/
-    
+
 Also thanks to all who have helped debug problems and suggest improvements
 including:
 
@@ -187,6 +188,8 @@ including:
 
 -  Tim Kadom, Mauricio Marcon Zaffari, Danial Pearce, Hongli Lai, Scott Wadden
   (passenger fixes)
+
+- David Kelso, Richard Hirner, Luke van der Hoeven (gemification and Rails 3 support)
 
 -  &lt;your name here&gt;
 
