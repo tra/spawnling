@@ -1,7 +1,11 @@
 # see activerecord/lib/active_record/connection_adaptors/abstract/connection_specification.rb
 class ActiveRecord::Base
   # reconnect without disconnecting
-  if Spawn::RAILS_2_2
+  if Spawn::RAILS_3_x
+    def self.spawn_reconnect(klass=self)
+      ActiveRecord::Base.connection.reconnect!
+    end
+  elsif Spawn::RAILS_2_2
     def self.spawn_reconnect(klass=self)
       # keep ancestors' connection_handlers around to avoid them being garbage collected in the forked child
       @@ancestor_connection_handlers ||= []

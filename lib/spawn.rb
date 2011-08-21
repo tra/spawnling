@@ -1,6 +1,7 @@
 module Spawn
   RAILS_1_x = (::Rails::VERSION::MAJOR == 1) unless defined?(RAILS_1_x)
-  RAILS_2_2 = (::Rails::VERSION::MAJOR > 2 || (::Rails::VERSION::MAJOR == 2 && ::Rails::VERSION::MINOR >= 2)) unless defined?(RAILS_2_2)
+  RAILS_2_2 = ((::Rails::VERSION::MAJOR == 2 && ::Rails::VERSION::MINOR >= 2)) unless defined?(RAILS_2_2)
+  RAILS_3_x = (::Rails::VERSION::MAJOR > 2) unless defined?(RAILS_3_x)
 
   @@default_options = {
     # default to forking (unless windows or jruby)
@@ -13,7 +14,8 @@ module Spawn
   # things to close in child process
   @@resources = []
   # in some environments, logger isn't defined
-  @@logger = defined?(RAILS_DEFAULT_LOGGER) ? RAILS_DEFAULT_LOGGER : Logger.new(STDERR)
+  @@logger = defined?(Rails) ? Rails.logger || Logger.new(STDERR)
+
   # forked children to kill on exit
   @@punks = []
 
@@ -33,18 +35,6 @@ module Spawn
     @@logger.info "spawn> default options = #{options.inspect}"
   end
 
-  # @deprecated - please use Spawn::default_options(:method => ) instead
-  # add calls to this in your environment.rb to set your configuration, for example,
-  # to use forking everywhere except your 'development' environment:
-  #   Spawn::method :fork
-  #   Spawn::method :thread, 'development'
-  def self.method(method, env = nil)
-    @@logger.warn "spawn> please use Spawn::default_options(:method => #{method}) instead of Spawn::method"
-    if !env || env == RAILS_ENV
-      default_options :method => method
-    end
-  end
-
   # set the resources to disconnect from in the child process (when forking)
   def self.resources_to_close(*resources)
     @@resources = resources
@@ -58,6 +48,31 @@ module Spawn
     # in case somebody spawns recursively
     @@resources.clear
   end
+
+  def self.alive?(pid)
+    begin
+      Process::kill 0, pid
+      # if the process is alive then kill won't throw an exception
+      true
+    rescue Errno::ESRCH
+      false
+    end
+  end
+
+  def self.kill_punks
+    @@punks.each do |punk|
+      if alive?(punk)
+        @@logger.info "spawn> parent(#{Process.pid}) killing child(#{punk})"
+        begin
+          Process.kill("TERM", punk)
+        rescue
+        end
+      end
+    end
+    @@punks = []
+  end
+  # register to kill marked children when parent exits
+  at_exit {kill_punks}
 
   def self.alive?(pid)
     begin
@@ -153,7 +168,12 @@ module Spawn
         # disconnect from the listening socket, et al
         Spawn.close_resources
         # get a new connection so the parent can keep the original one
-        ActiveRecord::Base.spawn_reconnect
+        # Old spawn did a bunch of hacks inside activerecord here. There is
+        # most likely a reason that this won't work, but I am dumb.
+        ActiveRecord::Base.connection.reconnect!
+
+        # set the process name
+        $0 = options[:argv] if options[:argv]
 
         # set the process name
         $0 = options[:argv] if options[:argv]
@@ -166,12 +186,7 @@ module Spawn
       ensure
         begin
           # to be safe, catch errors on closing the connnections too
-          if RAILS_2_2
-            ActiveRecord::Base.connection_handler.clear_all_connections!
-          else
-            ActiveRecord::Base.connection.disconnect!
-            ActiveRecord::Base.remove_connection
-          end
+          ActiveRecord::Base.connection_handler.clear_all_connections!
         ensure
           @@logger.info "spawn> child[#{Process.pid}] took #{Time.now - start} sec"
           # ensure log is flushed since we are using exit!
@@ -209,5 +224,9 @@ module Spawn
     thr.priority = -options[:nice] if options[:nice]
     return SpawnId.new(:thread, thr)
   end
-
 end
+
+
+ActiveRecord::Base.send :include, Spawn
+ActionController::Base.send :include, Spawn
+ActiveRecord::Observer.send :include, Spawn
