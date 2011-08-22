@@ -1,11 +1,11 @@
 # Spawn
 
-This plugin provides a 'spawn' method to easily fork OR thread long-running sections of
+This gem provides a 'spawn' method to easily fork OR thread long-running sections of
 code so that your application can return results to your users more quickly.
-This plugin works by creating new database connections in ActiveRecord::Base for the
+It works by creating new database connections in ActiveRecord::Base for the
 spawned block.
 
-The plugin also patches ActiveRecord::Base to handle some known bugs when using
+The gem also patches ActiveRecord::Base to handle some known bugs when using
 threads (see lib/patches.rb).
 
 ## Installation
