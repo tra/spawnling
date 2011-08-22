@@ -30,8 +30,8 @@ into your config/database.yml.
 Here's a simple example of how to demonstrate the spawn plugin.
 In one of your controllers, insert this code (after installing the plugin of course):
 
-    spawn do
-       logger.info("I feel sleepy...")
+   spawn do
+      logger.info("I feel sleepy...")
        sleep 11
        logger.info("Time to wake up!")
      end
@@ -44,8 +44,8 @@ spawn to Spawn::wait(), like this:
 
     N.times do |i|
       # spawn N blocks of code
-      spawn_ids[i] = spawn do
-        something(i)
+     spawn_ids[i] = spawn do
+       something(i)
       end
     end
     # wait for all N blocks of code to finish running
@@ -88,8 +88,8 @@ methods according to your needs.
 If you want your forked child to run at a lower priority than the parent process, pass in
 the :nice option like this:
 
-    spawn(:nice => 7) do
-      do_something_nicely
+   spawn(:nice => 7) do
+     do_something_nicely
     end
 
 ### fork me
@@ -99,8 +99,8 @@ do threading either by telling the spawn method when you call it or by configuri
 environment.
 For example, this is how you can tell spawn to use threading on the call,
 
-    spawn(:method => :thread) do
-      something
+   spawn(:method => :thread) do
+     something
     end
 
 When you use threaded spawning, make sure that your application is thread-safe. Rails
@@ -128,8 +128,8 @@ listing the running processes (ps).
 For example, if you do something like this,
 
     3.times do |i|
-      spawn(:argv => "spawn -#{i}-") do
-        something(i)
+     spawn(:argv => "spawn -#{i}-") do
+       something(i)
       end
     end
 

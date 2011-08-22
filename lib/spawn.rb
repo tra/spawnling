@@ -171,12 +171,7 @@ module Spawn
         # disconnect from the listening socket, et al
         Spawn.close_resources
         # get a new connection so the parent can keep the original one
-        # Old spawn did a bunch of hacks inside activerecord here. There is
-        # most likely a reason that this won't work, but I am dumb.
-        ActiveRecord::Base.connection.reconnect!
-
-        # set the process name
-        $0 = options[:argv] if options[:argv]
+        ActiveRecord::Base.spawn_reconnect
 
         # set the process name
         $0 = options[:argv] if options[:argv]
