@@ -1,3 +1,5 @@
+require 'active_record'
+
 # see activerecord/lib/active_record/connection_adaptors/abstract/connection_specification.rb
 class ActiveRecord::Base
   # reconnect without disconnecting
