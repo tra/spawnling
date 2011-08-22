@@ -189,6 +189,8 @@ including:
 -  Tim Kadom, Mauricio Marcon Zaffari, Danial Pearce, Hongli Lai, Scott Wadden
   (passenger fixes)
 
+- Will Bryant (memcache fix)
+
 - David Kelso, Richard Hirner, Luke van der Hoeven (gemification and Rails 3 support)
 
 -  &lt;your name here&gt;
