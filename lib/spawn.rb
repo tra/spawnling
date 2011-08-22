@@ -6,7 +6,7 @@ module Spawn
 
   @@default_options = {
     # default to forking (unless windows or jruby)
-    :method => ((RUBY_PLATFORM =~ /(win32|java)/) ? :thread : :fork),
+    :method => ((RUBY_PLATFORM =~ /(win32|mingw32|java)/) ? :thread : :fork),
     :nice   => nil,
     :kill   => false,
     :argv   => nil
