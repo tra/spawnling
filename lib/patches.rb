@@ -123,3 +123,5 @@ if need_passenger_patch
     end
   end
 end
+
+ActiveSupport::Cache::MemCacheStore.delegate :reset, :to => :@data
