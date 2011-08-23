@@ -109,8 +109,8 @@ module Spawn
     # setting options[:method] will override configured value in default_options[:method]
     if options[:method] == :yield
       yield
-    elsif @@method.respond_to?(:call)
-      @@method.call(proc { yield })
+    elsif options[:method].respond_to?(:call)
+      options[:method].call(proc { yield })
     elsif options[:method] == :thread
       # for versions before 2.2, check for allow_concurrency
       if RAILS_2_2 || ActiveRecord::Base.allow_concurrency
