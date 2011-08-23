@@ -15,7 +15,7 @@ module Spawn
   # things to close in child process
   @@resources = []
   # in some environments, logger isn't defined
-  @@logger = defined?(Rails) ? Rails.logger || Logger.new(STDERR)
+  @@logger = defined?(Rails) ? Rails.logger : Logger.new(STDERR)
 
   # forked children to kill on exit
   @@punks = []
