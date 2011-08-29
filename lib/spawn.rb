@@ -14,11 +14,17 @@ module Spawn
 
   # things to close in child process
   @@resources = []
-  # in some environments, logger isn't defined
-  @@logger = defined?(Rails) ? Rails.logger : Logger.new(STDERR)
 
   # forked children to kill on exit
   @@punks = []
+
+  # Make sure we have a logger and require our patches when we're included
+  def self.included(klazz)
+    # in some environments, logger isn't defined
+    @@logger = defined?(Rails) ? Rails.logger : Logger.new(STDERR)
+    require 'patches'
+  end
+
 
   # Set the options to use every time spawn is called unless specified
   # otherwise.  For example, in your environment, do something like
