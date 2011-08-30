@@ -55,12 +55,20 @@ class ActiveRecord::Base
 end
 
 # just borrowing from the mongrel & passenger patches:
-if defined? Unicorn::HttpServer
+if defined?(Unicorn::HttpServer) && defined?(Unicorn::HttpRequest::REQ)
   class Unicorn::HttpServer
     REQ = Unicorn::HttpRequest::REQ
     alias_method :orig_process_client, :process_client
     def process_client(client)
       Spawn.resources_to_close(client, REQ)
+      orig_process_client(client)
+    end
+  end
+elsif defined? Unicorn::HttpServer
+  class Unicorn::HttpServer
+    alias_method :orig_process_client, :process_client
+    def process_client(client)
+      Spawn.resources_to_close(client, @request)
       orig_process_client(client)
     end
   end
