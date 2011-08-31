@@ -193,7 +193,7 @@ including:
 
 - David Kelso, Richard Hirner, Luke van der Hoeven (gemification and Rails 3 support)
 
-- Eric Stewart (Unicorn fix)
+- Jay Caines-Gooby, Eric Stewart (Unicorn fix)
 
 -  &lt;your name here&gt;
 
