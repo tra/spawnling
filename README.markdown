@@ -189,9 +189,11 @@ including:
 -  Tim Kadom, Mauricio Marcon Zaffari, Danial Pearce, Hongli Lai, Scott Wadden
   (passenger fixes)
 
-- Will Bryant (memcache fix)
+- Will Bryant, James Sanders (memcache fix)
 
 - David Kelso, Richard Hirner, Luke van der Hoeven (gemification and Rails 3 support)
+
+- Eric Stewart (Unicorn fix)
 
 -  &lt;your name here&gt;
 
