@@ -119,7 +119,8 @@ module Spawn
       options[:method].call(proc { yield })
     elsif options[:method] == :thread
       # for versions before 2.2, check for allow_concurrency
-      if RAILS_2_2 || ActiveRecord::Base.allow_concurrency
+     if RAILS_2_2 || ActiveRecord::Base.respond_to?(:allow_concurrency) ? 
+                       ActiveRecord::Base.allow_concurrency :  Rails.application.config.allow_concurrency
         thread_it(options) { yield }
       else
         @@logger.error("spawn(:method=>:thread) only allowed when allow_concurrency=true")
