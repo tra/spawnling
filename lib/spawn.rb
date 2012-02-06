@@ -11,6 +11,8 @@ module Spawn
     RAILS_3_x = nil
   end
 
+  require 'patches' unless defined?(Spawn.spawn_reconnect) # For some reason, the init.rb wasn't including the patches.
+
   @@default_options = {
     # default to forking (unless windows or jruby)
     :method => ((RUBY_PLATFORM =~ /(win32|mingw32|java)/) ? :thread : :fork),
@@ -117,7 +119,7 @@ module Spawn
   # By default the process will be a forked process.   To use threading, pass
   # :method => :thread or override the default behavior in the environment by setting
   # 'Spawn::method :thread'.
-  def spawn(opts = {})
+  def self.run(opts = {})
     options = @@default_options.merge(symbolize_options(opts))
     # setting options[:method] will override configured value in default_options[:method]
     if options[:method] == :yield
@@ -128,17 +130,17 @@ module Spawn
       # for versions before 2.2, check for allow_concurrency
      if RAILS_2_2 || ActiveRecord::Base.respond_to?(:allow_concurrency) ?
                        ActiveRecord::Base.allow_concurrency :  Rails.application.config.allow_concurrency
-        thread_it(options) { yield }
+        self.thread_it(options) { yield }
       else
         @@logger.error("spawn(:method=>:thread) only allowed when allow_concurrency=true")
         raise "spawn requires config.active_record.allow_concurrency=true when used with :method=>:thread"
       end
     else
-      fork_it(options) { yield }
+      self.fork_it(options) { yield }
     end
   end
 
-  def wait(sids = [])
+  def self.wait(sids = [])
     # wait for all threads and/or forks (if a single sid passed in, convert to array first)
     Array(sids).each do |sid|
       if sid.type == :thread
@@ -165,7 +167,7 @@ module Spawn
   end
 
   protected
-  def fork_it(options)
+  def self.fork_it(options)
     # The problem with rails is that it only has one connection (per class),
     # so when we fork a new process, we need to reconnect.
     @@logger.debug "spawn> parent PID = #{Process.pid}" if @@logger
@@ -229,7 +231,7 @@ module Spawn
     return SpawnId.new(:fork, child)
   end
 
-  def thread_it(options)
+  def self.thread_it(options)
     # clean up stale connections from previous threads
     ActiveRecord::Base.verify_active_connections!() if defined?(ActiveRecord)
     thr = Thread.new do
@@ -241,7 +243,7 @@ module Spawn
   end
 
   # In case we don't have rails, can't call opts.symbolize_keys
-  def symbolize_options(hash)
+  def self.symbolize_options(hash)
     hash.inject({}) do |new_hash, (key, value)|
       new_hash[key.to_sym] = value
       new_hash
