@@ -2,6 +2,8 @@ module Spawn
   RAILS_1_x = (::Rails::VERSION::MAJOR == 1) unless defined?(RAILS_1_x)
   RAILS_2_2 = (::Rails::VERSION::MAJOR > 2 || (::Rails::VERSION::MAJOR == 2 && ::Rails::VERSION::MINOR >= 2)) unless defined?(RAILS_2_2)
 
+  require 'patches' unless defined?(Spawn.spawn_reconnect) # For some reason, the init.rb wasn't including the patches.
+
   @@default_options = {
     # default to forking (unless windows or jruby)
     :method => ((RUBY_PLATFORM =~ /(win32|java)/) ? :thread : :fork),
@@ -9,7 +11,7 @@ module Spawn
     :kill   => false,
     :argv   => nil
   }
-  
+
   # things to close in child process
   @@resources = []
   # in some environments, logger isn't defined
@@ -58,7 +60,7 @@ module Spawn
     # in case somebody spawns recursively
     @@resources.clear
   end
-  
+
   def self.alive?(pid)
     begin
       Process::kill 0, pid
@@ -68,7 +70,7 @@ module Spawn
       false
     end
   end
-  
+
   def self.kill_punks
     @@punks.each do |punk|
       if alive?(punk)
@@ -88,7 +90,7 @@ module Spawn
   # By default the process will be a forked process.   To use threading, pass
   # :method => :thread or override the default behavior in the environment by setting
   # 'Spawn::method :thread'.
-  def spawn(opts = {})
+  def Spawn.run(opts = {})
     options = @@default_options.merge(opts.symbolize_keys)
     # setting options[:method] will override configured value in default_options[:method]
     if options[:method] == :yield
@@ -96,17 +98,17 @@ module Spawn
     elsif options[:method] == :thread
       # for versions before 2.2, check for allow_concurrency
       if RAILS_2_2 || ActiveRecord::Base.allow_concurrency
-        thread_it(options) { yield }
+        self.thread_it(options) { yield }
       else
         @@logger.error("spawn(:method=>:thread) only allowed when allow_concurrency=true")
         raise "spawn requires config.active_record.allow_concurrency=true when used with :method=>:thread"
       end
     else
-      fork_it(options) { yield }
+      self.fork_it(options) { yield }
     end
   end
-  
-  def wait(sids = [])
+
+  def self.wait(sids = [])
     # wait for all threads and/or forks (if a single sid passed in, convert to array first)
     Array(sids).each do |sid|
       if sid.type == :thread
@@ -122,7 +124,7 @@ module Spawn
     # clean up connections from expired threads
     ActiveRecord::Base.verify_active_connections!()
   end
-  
+
   class SpawnId
     attr_accessor :type
     attr_accessor :handle
@@ -133,7 +135,7 @@ module Spawn
   end
 
   protected
-  def fork_it(options)
+  def self.fork_it(options)
     # The problem with rails is that it only has one connection (per class),
     # so when we fork a new process, we need to reconnect.
     @@logger.debug "spawn> parent PID = #{Process.pid}"
@@ -152,7 +154,7 @@ module Spawn
         Spawn.close_resources
         # get a new connection so the parent can keep the original one
         ActiveRecord::Base.spawn_reconnect
-        
+
         # set the process name
         $0 = options[:argv] if options[:argv]
 
@@ -197,7 +199,7 @@ module Spawn
     return SpawnId.new(:fork, child)
   end
 
-  def thread_it(options)
+  def self.thread_it(options)
     # clean up stale connections from previous threads
     ActiveRecord::Base.verify_active_connections!()
     thr = Thread.new do
