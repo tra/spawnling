@@ -204,7 +204,7 @@ class Spawn
     ActiveRecord::Base.verify_active_connections!() if defined?(ActiveRecord)
     thr = Thread.new do
       # run the long-running code block
-      yield
+      ActiveRecord::Base.connection_pool.with_connection { yield  }
     end
     thr.priority = -options[:nice] if options[:nice]
     return Spawn::Id.new(:thread, thr)
