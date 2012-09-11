@@ -202,7 +202,7 @@ module Spawn
     ActiveRecord::Base.verify_active_connections!()
     thr = Thread.new do
       # run the long-running code block
-      yield
+      ActiveRecord::Base.connection_pool.with_connection { yield  }
     end
     thr.priority = -options[:nice] if options[:nice]
     return SpawnId.new(:thread, thr)
