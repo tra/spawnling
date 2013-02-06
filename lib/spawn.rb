@@ -1,8 +1,15 @@
-module Spawn
+require 'logger'
 
-  RAILS_1_x = (::Rails::VERSION::MAJOR == 1) unless defined?(RAILS_1_x)
-  RAILS_2_2 = ((::Rails::VERSION::MAJOR == 2 && ::Rails::VERSION::MINOR >= 2)) unless defined?(RAILS_2_2)
-  RAILS_3_x = (::Rails::VERSION::MAJOR > 2) unless defined?(RAILS_3_x)
+module Spawn
+  if defined? Rails
+    RAILS_1_x = (::Rails::VERSION::MAJOR == 1) unless defined?(RAILS_1_x)
+    RAILS_2_2 = ((::Rails::VERSION::MAJOR == 2 && ::Rails::VERSION::MINOR >= 2)) unless defined?(RAILS_2_2)
+    RAILS_3_x = (::Rails::VERSION::MAJOR > 2) unless defined?(RAILS_3_x)
+  else
+    RAILS_1_x = nil
+    RAILS_2_2 = nil
+    RAILS_3_x = nil
+  end
 
   @@default_options = {
     # default to forking (unless windows or jruby)
@@ -111,7 +118,7 @@ module Spawn
   # :method => :thread or override the default behavior in the environment by setting
   # 'Spawn::method :thread'.
   def spawn(opts = {})
-    options = @@default_options.merge(opts.symbolize_keys)
+    options = @@default_options.merge(symbolize_options(opts))
     # setting options[:method] will override configured value in default_options[:method]
     if options[:method] == :yield
       yield
@@ -119,7 +126,7 @@ module Spawn
       options[:method].call(proc { yield })
     elsif options[:method] == :thread
       # for versions before 2.2, check for allow_concurrency
-     if RAILS_2_2 || ActiveRecord::Base.respond_to?(:allow_concurrency) ? 
+     if RAILS_2_2 || ActiveRecord::Base.respond_to?(:allow_concurrency) ?
                        ActiveRecord::Base.allow_concurrency :  Rails.application.config.allow_concurrency
         thread_it(options) { yield }
       else
@@ -145,7 +152,7 @@ module Spawn
       end
     end
     # clean up connections from expired threads
-    ActiveRecord::Base.verify_active_connections!()
+    ActiveRecord::Base.verify_active_connections!() if defined?(ActiveRecord)
   end
 
   class SpawnId
@@ -175,10 +182,12 @@ module Spawn
 
         # disconnect from the listening socket, et al
         Spawn.close_resources
-        # get a new database connection so the parent can keep the original one
-        ActiveRecord::Base.spawn_reconnect
-        # close the memcache connection so the parent can keep the original one
-        Rails.cache.reset if Rails.cache.respond_to?(:reset)
+        if defined?(Rails)
+          # get a new database connection so the parent can keep the original one
+          ActiveRecord::Base.spawn_reconnect
+          # close the memcache connection so the parent can keep the original one
+          Rails.cache.reset if Rails.cache.respond_to?(:reset)
+        end
 
         # set the process name
         $0 = options[:argv] if options[:argv]
@@ -192,7 +201,7 @@ module Spawn
       ensure
         begin
           # to be safe, catch errors on closing the connnections too
-          ActiveRecord::Base.connection_handler.clear_all_connections!
+          ActiveRecord::Base.connection_handler.clear_all_connections! if defined?(ActiveRecord)
         ensure
           @@logger.info "spawn> child[#{Process.pid}] took #{Time.now - start} sec" if @@logger
           # ensure log is flushed since we are using exit!
@@ -222,12 +231,20 @@ module Spawn
 
   def thread_it(options)
     # clean up stale connections from previous threads
-    ActiveRecord::Base.verify_active_connections!()
+    ActiveRecord::Base.verify_active_connections!() if defined?(ActiveRecord)
     thr = Thread.new do
       # run the long-running code block
       yield
     end
     thr.priority = -options[:nice] if options[:nice]
     return SpawnId.new(:thread, thr)
+  end
+
+  # In case we don't have rails, can't call opts.symbolize_keys
+  def symbolize_options(hash)
+    hash.inject({}) do |new_hash, (key, value)|
+      new_hash[key.to_sym] = value
+      new_hash
+    end
   end
 end
