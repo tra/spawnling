@@ -1,3 +1,9 @@
+#News
+
+Now runs with ruby 1.9 (and later).  Because ruby "stole" the name "spawn", this gem
+now has been redefined to use "Spawn.run(&block)" instead of "spawn(&block)".  Other
+than that nothing has changed in the basic usage.  Read below for detailed usage.
+
 # Spawn
 
 This gem provides a 'spawn' method to easily fork OR thread long-running sections of
@@ -10,9 +16,9 @@ threads (see lib/patches.rb).
 
 ## Installation
 
-If you want to live on the "edge"  branch (note: currently the only branch that has the gem is "edge"), then
+If you want to live on the edge of the master branch,
 
-    gem "spawn", :git => 'git://github.com/tra/spawn', :branch => "edge"
+    gem "spawn", :git => 'git://github.com/tra/spawn'
 
 in your Gemfile and use bundler to manage it (bundle install, bundle update).
 
@@ -30,7 +36,7 @@ into your config/database.yml.
 Here's a simple example of how to demonstrate the spawn plugin.
 In one of your controllers, insert this code (after installing the plugin of course):
 
-   spawn do
+   Spawn.run do
       logger.info("I feel sleepy...")
        sleep 11
        logger.info("Time to wake up!")
@@ -40,16 +46,16 @@ If everything is working correctly, your controller should finish quickly then y
 the last log message several seconds later.
 
 If you need to wait for the spawned processes/threads, then pass the objects returned by
-spawn to Spawn::wait(), like this:
+spawn to Spawn.wait(), like this:
 
     N.times do |i|
       # spawn N blocks of code
-     spawn_ids[i] = spawn do
+     spawn_ids[i] = Spawn.run do
        something(i)
       end
     end
     # wait for all N blocks of code to finish running
-    wait(spawn_ids)
+    Spawn.wait(spawn_ids)
 
 ## Options
 
@@ -88,7 +94,7 @@ methods according to your needs.
 If you want your forked child to run at a lower priority than the parent process, pass in
 the :nice option like this:
 
-   spawn(:nice => 7) do
+   Spawn.run(:nice => 7) do
      do_something_nicely
     end
 
@@ -99,7 +105,7 @@ do threading either by telling the spawn method when you call it or by configuri
 environment.
 For example, this is how you can tell spawn to use threading on the call,
 
-   spawn(:method => :thread) do
+   Spawn.run(:method => :thread) do
      something
     end
 
@@ -128,7 +134,7 @@ listing the running processes (ps).
 For example, if you do something like this,
 
     3.times do |i|
-     spawn(:argv => "spawn -#{i}-") do
+     Spawn.run(:argv => "spawn -#{i}-") do
        something(i)
       end
     end
@@ -194,6 +200,8 @@ including:
 - David Kelso, Richard Hirner, Luke van der Hoeven (gemification and Rails 3 support)
 
 - Jay Caines-Gooby, Eric Stewart (Unicorn fix)
+
+- Dan Sharp for the changes that allow it to work with Ruby 1.9 and later
 
 -  &lt;your name here&gt;
 

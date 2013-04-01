@@ -1,7 +1,7 @@
 require 'logger'
 
-module Spawn
-  if defined? Rails
+class Spawn
+  if defined? ::Rails
     RAILS_1_x = (::Rails::VERSION::MAJOR == 1) unless defined?(RAILS_1_x)
     RAILS_2_2 = ((::Rails::VERSION::MAJOR == 2 && ::Rails::VERSION::MINOR >= 2)) unless defined?(RAILS_2_2)
     RAILS_3_x = (::Rails::VERSION::MAJOR > 2) unless defined?(RAILS_3_x)
@@ -10,8 +10,6 @@ module Spawn
     RAILS_2_2 = nil
     RAILS_3_x = nil
   end
-
-  require 'patches' unless defined?(Spawn.spawn_reconnect) # For some reason, the init.rb wasn't including the patches.
 
   @@default_options = {
     # default to forking (unless windows or jruby)
@@ -27,13 +25,8 @@ module Spawn
   # forked children to kill on exit
   @@punks = []
 
-  # Make sure we have a logger and require our patches when we're included
-  def self.included(klazz)
-    # in some environments, logger isn't defined
-    @@logger = defined?(Rails) ? Rails.logger : Logger.new(STDERR)
-    require 'patches'
-  end
-
+  # in some environments, logger isn't defined
+  @@logger = defined?(::Rails) ? ::Rails.logger : ::Logger.new(STDERR)
 
   # Set the options to use every time spawn is called unless specified
   # otherwise.  For example, in your environment, do something like
@@ -78,31 +71,6 @@ module Spawn
   def self.kill_punks
     @@punks.each do |punk|
       if alive?(punk)
-        @@logger.info "spawn> parent(#{Process.pid}) killing child(#{punk})"
-        begin
-          Process.kill("TERM", punk)
-        rescue
-        end
-      end
-    end
-    @@punks = []
-  end
-  # register to kill marked children when parent exits
-  at_exit {kill_punks}
-
-  def self.alive?(pid)
-    begin
-      Process::kill 0, pid
-      # if the process is alive then kill won't throw an exception
-      true
-    rescue Errno::ESRCH
-      false
-    end
-  end
-
-  def self.kill_punks
-    @@punks.each do |punk|
-      if alive?(punk)
         @@logger.info "spawn> parent(#{Process.pid}) killing child(#{punk})" if @@logger
         begin
           Process.kill("TERM", punk)
@@ -113,7 +81,7 @@ module Spawn
     @@punks = []
   end
   # register to kill marked children when parent exits
-  at_exit {kill_punks}
+  at_exit { Spawn.kill_punks }
 
   # Spawns a long-running section of code and returns the ID of the spawned process.
   # By default the process will be a forked process.   To use threading, pass
@@ -157,7 +125,7 @@ module Spawn
     ActiveRecord::Base.verify_active_connections!() if defined?(ActiveRecord)
   end
 
-  class SpawnId
+  class Id
     attr_accessor :type
     attr_accessor :handle
     def initialize(t, h)
@@ -209,7 +177,7 @@ module Spawn
           # ensure log is flushed since we are using exit!
           @@logger.flush if @@logger && @@logger.respond_to?(:flush)
           # this child might also have children to kill if it called spawn
-          Spawn::kill_punks
+          Spawn.kill_punks
           # this form of exit doesn't call at_exit handlers
           exit!(0)
         end
@@ -220,7 +188,7 @@ module Spawn
     Process.detach(child)
 
     # remove dead children from the target list to avoid memory leaks
-    @@punks.delete_if {|punk| !Spawn::alive?(punk)}
+    @@punks.delete_if {|punk| !alive?(punk)}
 
     # mark this child for death when this process dies
     if options[:kill]
@@ -228,7 +196,7 @@ module Spawn
       @@logger.debug "spawn> death row = #{@@punks.inspect}" if @@logger
     end
 
-    return SpawnId.new(:fork, child)
+    return Spawn::Id.new(:fork, child)
   end
 
   def self.thread_it(options)
@@ -239,7 +207,7 @@ module Spawn
       yield
     end
     thr.priority = -options[:nice] if options[:nice]
-    return SpawnId.new(:thread, thr)
+    return Spawn::Id.new(:thread, thr)
   end
 
   # In case we don't have rails, can't call opts.symbolize_keys
@@ -250,3 +218,6 @@ module Spawn
     end
   end
 end
+
+# patches depends on Spawn so require it after the class
+require 'patches'

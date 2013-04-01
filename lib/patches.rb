@@ -2,7 +2,7 @@ if defined?(ActiveRecord)
   # see activerecord/lib/active_record/connection_adaptors/abstract/connection_specification.rb
   class ActiveRecord::Base
     # reconnect without disconnecting
-    if Spawn::RAILS_3_x || Spawn::RAILS_2_2
+    if ::Spawn::RAILS_3_x || ::Spawn::RAILS_2_2
       def self.spawn_reconnect(klass=self)
         # keep ancestors' connection_handlers around to avoid them being garbage collected in the forked child
         @@ancestor_connection_handlers ||= []
@@ -24,7 +24,7 @@ if defined?(ActiveRecord)
     end
 
     # this patch not needed on Rails 2.x and later
-    if Spawn::RAILS_1_x
+    if ::Spawn::RAILS_1_x
       # monkey patch to fix threading problems,
       # see: http://dev.rubyonrails.org/ticket/7579
       def self.clear_reloadable_connections!
@@ -58,7 +58,7 @@ if defined?(Unicorn::HttpServer) && defined?(Unicorn::HttpRequest::REQ)
     REQ = Unicorn::HttpRequest::REQ
     alias_method :orig_process_client, :process_client
     def process_client(client)
-      Spawn.resources_to_close(client, REQ)
+      ::Spawn.resources_to_close(client, REQ)
       orig_process_client(client)
     end
   end
@@ -66,7 +66,7 @@ elsif defined? Unicorn::HttpServer
   class Unicorn::HttpServer
     alias_method :orig_process_client, :process_client
     def process_client(client)
-      Spawn.resources_to_close(client, @request)
+      ::Spawn.resources_to_close(client, @request)
       orig_process_client(client)
     end
   end
@@ -81,7 +81,7 @@ if defined? Mongrel::HttpServer
     # the socket that is being used so Spawn can close it upon forking
     alias_method :orig_process_client, :process_client
     def process_client(client)
-      Spawn.resources_to_close(client, @socket)
+      ::Spawn.resources_to_close(client, @socket)
       orig_process_client(client)
     end
   end
@@ -101,7 +101,7 @@ if need_passenger_patch
     class Passenger::Railz::RequestHandler
       alias_method :orig_process_request, :process_request
       def process_request(headers, input, output)
-        Spawn.resources_to_close(input, output)
+        ::Spawn.resources_to_close(input, output)
         orig_process_request(headers, input, output)
       end
     end
@@ -112,7 +112,7 @@ if need_passenger_patch
     class PhusionPassenger::Railz::RequestHandler
       alias_method :orig_process_request, :process_request
       def process_request(headers, input, output)
-        Spawn.resources_to_close(input, output)
+        ::Spawn.resources_to_close(input, output)
         orig_process_request(headers, input, output)
       end
     end
@@ -123,7 +123,7 @@ if need_passenger_patch
     class PhusionPassenger::Rack::RequestHandler
       alias_method :orig_process_request, :process_request
       def process_request(headers, input, output)
-        Spawn.resources_to_close(input, output)
+        ::Spawn.resources_to_close(input, output)
         orig_process_request(headers, input, output)
       end
     end
