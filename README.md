@@ -9,10 +9,11 @@ than that nothing has changed in the basic usage.  Read below for detailed usage
 This gem provides a 'Spawn' class to easily fork OR thread long-running sections of
 code so that your application can return results to your users more quickly.
 It works by creating new database connections in ActiveRecord::Base for the
-spawned block.
+spawned block so that you don't have to worry about database connections working,
+they just do.
 
 The gem also patches ActiveRecord::Base to handle some known bugs when using
-threads (see lib/patches.rb).
+threads if you prefer using the threaded model over forking.
 
 ## Installation
 
@@ -35,29 +36,29 @@ into your config/database.yml.
 
 Here's a simple example of how to demonstrate the spawn plugin.
 In one of your controllers, insert this code (after installing the plugin of course):
-
-    Spawn.new do
-      logger.info("I feel sleepy...")
-       sleep 11
-       logger.info("Time to wake up!")
-     end
-
+```ruby
+Spawn.new do
+  logger.info("I feel sleepy...")
+  sleep 11
+  logger.info("Time to wake up!")
+end
+```
 If everything is working correctly, your controller should finish quickly then you'll see
 the last log message several seconds later.
 
 If you need to wait for the spawned processes/threads, then pass the objects returned by
 spawn to Spawn.wait(), like this:
-
-    spawns = []
-    N.times do |i|
-      # spawn N blocks of code
-      spawns << Spawn.new do
-        something(i)
-      end
-    end
-    # wait for all N blocks of code to finish running
-    Spawn.wait(spawns)
-
+```ruby
+spawns = []
+N.times do |i|
+  # spawn N blocks of code
+  spawns << Spawn.new do
+    something(i)
+  end
+end
+# wait for all N blocks of code to finish running
+Spawn.wait(spawns)
+```
 ## Options
 
 The options you can pass to spawn are:
@@ -74,19 +75,19 @@ The options you can pass to spawn are:
 Any option to spawn can be set as a default so that you don't have to pass them in
 to every call of spawn.   To configure the spawn default options, add a line to
 your configuration file(s) like this:
-
-    Spawn::default_options {:method => :thread}
-
+```ruby
+  Spawn::default_options {:method => :thread}
+```
 If you don't set any default options, the :method will default to :fork.  To
 specify different values for different environments, add the default_options call to
 he appropriate environment file (development.rb, test.rb).   For testing you can set
 the default :method to :yield so that the code is run inline.
-
-    # in environment.rb
-    Spawn::method :method => :fork, :nice => 7
-    # in test.rb, will override the environment.rb setting
-    Spawn::method :method => :yield
-
+```ruby
+  # in environment.rb
+  Spawn.method :method => :fork, :nice => 7
+  # in test.rb, will override the environment.rb setting
+  Spawn.method :method => :yield
+```
 This allows you to set your production and development environments to use different
 methods according to your needs.
 
@@ -94,28 +95,28 @@ methods according to your needs.
 
 If you want your forked child to run at a lower priority than the parent process, pass in
 the :nice option like this:
-
-   Spawn.new(:nice => 7) do
-     do_something_nicely
-    end
-
+```ruby
+Spawn.new(:nice => 7) do
+  do_something_nicely
+end
+```
 ### fork me
 
 By default, spawn will use the fork to spawn child processes.  You can configure it to
 do threading either by telling the spawn method when you call it or by configuring your
 environment.
 For example, this is how you can tell spawn to use threading on the call,
-
-    Spawn.new(:method => :thread) do
-      something
-    end
-
+```ruby
+Spawn.new(:method => :thread) do
+  something
+end
+```
 When you use threaded spawning, make sure that your application is thread-safe. Rails
-can be switched to thread-safe mode with
-
-    # Enable threaded mode
-    config.threadsafe!
-
+can be switched to thread-safe mode with (not sure if this is needed anymore)
+```ruby
+  # Enable threaded mode
+  config.threadsafe!
+```
 in environments/your_environment.rb
 
 ### kill or be killed
@@ -133,20 +134,20 @@ You should then be able to see this string as the process name when
 listing the running processes (ps).
 
 For example, if you do something like this,
-
-    3.times do |i|
-     Spawn.new(:argv => "spawn -#{i}-") do
-       something(i)
-      end
-    end
-
+```ruby
+3.times do |i|
+ Spawn.new(:argv => "spawn -#{i}-") do
+   something(i)
+  end
+end
+```
 then in the shell,
-
-    $ ps -ef | grep spawn
-    502  2645  2642   0   0:00.01 ttys002    0:00.02 spawn -0-
-    502  2646  2642   0   0:00.02 ttys002    0:00.02 spawn -1-
-    502  2647  2642   0   0:00.02 ttys002    0:00.03 spawn -2-
-
+```shell
+$ ps -ef | grep spawn
+502  2645  2642   0   0:00.01 ttys002    0:00.02 spawn -0-
+502  2646  2642   0   0:00.02 ttys002    0:00.02 spawn -1-
+502  2647  2642   0   0:00.02 ttys002    0:00.03 spawn -2-
+```
 The length of the process name may be limited by your OS so you might want to experiment
 to see how long it can be (it may be limited by the length of the original process name).
 
@@ -172,7 +173,7 @@ Forking advantages:
 Threading advantages:
 - less filling - threads take less resources... how much less?  it depends.   Some
   flavors of Unix are pretty efficient at forking so the threading advantage may not
-  be as big as you think... but then again, maybe it's more than you think.  ;-)
+  be as big as you think... but then again, maybe it's more than you think.  :wink:
 - debugging - you can set breakpoints in your threads
 
 ## Acknowledgements
