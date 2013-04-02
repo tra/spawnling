@@ -28,6 +28,9 @@ class Spawn
   # in some environments, logger isn't defined
   @@logger = defined?(::Rails) ? ::Rails.logger : ::Logger.new(STDERR)
 
+  attr_accessor :type
+  attr_accessor :handle
+
   # Set the options to use every time spawn is called unless specified
   # otherwise.  For example, in your environment, do something like
   # this:
@@ -87,7 +90,8 @@ class Spawn
   # By default the process will be a forked process.   To use threading, pass
   # :method => :thread or override the default behavior in the environment by setting
   # 'Spawn::method :thread'.
-  def self.run(opts = {})
+  def initialize(opts = {})
+    raise "Must give block of code to be spawned" unless block_given?
     options = @@default_options.merge(symbolize_options(opts))
     # setting options[:method] will override configured value in default_options[:method]
     if options[:method] == :yield
@@ -97,14 +101,16 @@ class Spawn
     elsif options[:method] == :thread
       # for versions before 2.2, check for allow_concurrency
      if RAILS_2_2 || ActiveRecord::Base.respond_to?(:allow_concurrency) ?
-                       ActiveRecord::Base.allow_concurrency :  Rails.application.config.allow_concurrency
-        self.thread_it(options) { yield }
+          ActiveRecord::Base.allow_concurrency :  Rails.application.config.allow_concurrency
+       @type = :thread
+       @handle = thread_it(options) { yield }
       else
         @@logger.error("spawn(:method=>:thread) only allowed when allow_concurrency=true")
         raise "spawn requires config.active_record.allow_concurrency=true when used with :method=>:thread"
       end
     else
-      self.fork_it(options) { yield }
+      @type = :fork
+      @handle = fork_it(options) { yield }
     end
   end
 
@@ -125,17 +131,9 @@ class Spawn
     ActiveRecord::Base.verify_active_connections!() if defined?(ActiveRecord)
   end
 
-  class Id
-    attr_accessor :type
-    attr_accessor :handle
-    def initialize(t, h)
-      self.type = t
-      self.handle = h
-    end
-  end
-
   protected
-  def self.fork_it(options)
+
+  def fork_it(options)
     # The problem with rails is that it only has one connection (per class),
     # so when we fork a new process, we need to reconnect.
     @@logger.debug "spawn> parent PID = #{Process.pid}" if @@logger
@@ -196,10 +194,11 @@ class Spawn
       @@logger.debug "spawn> death row = #{@@punks.inspect}" if @@logger
     end
 
-    return Spawn::Id.new(:fork, child)
+    # return Spawn::Id.new(:fork, child)
+    return child
   end
 
-  def self.thread_it(options)
+  def thread_it(options)
     # clean up stale connections from previous threads
     ActiveRecord::Base.verify_active_connections!() if defined?(ActiveRecord)
     thr = Thread.new do
@@ -207,11 +206,11 @@ class Spawn
       ActiveRecord::Base.connection_pool.with_connection { yield  }
     end
     thr.priority = -options[:nice] if options[:nice]
-    return Spawn::Id.new(:thread, thr)
+    return thr
   end
 
   # In case we don't have rails, can't call opts.symbolize_keys
-  def self.symbolize_options(hash)
+  def symbolize_options(hash)
     hash.inject({}) do |new_hash, (key, value)|
       new_hash[key.to_sym] = value
       new_hash

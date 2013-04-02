@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{spawn}
-  s.version = "1.1"
+  s.version = "2.0"
   s.required_rubygems_version = ">= 1.3.6"
 
   s.authors = ['Tom Anderson']
@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
 
   s.homepage = %q{http://github.com/tra/spawn}
   s.summary = %q{Easily fork OR thread long-running sections of code in Ruby}
-  s.description = %q{This plugin provides a 'spawn' method to easily fork OR
+  s.description = %q{This plugin provides a 'Spawn' class to easily fork OR
 thread long-running sections of code so that your application can return
 results to your users more quickly.  This plugin works by creating new database
 connections in ActiveRecord::Base for the spawned block.
