@@ -179,12 +179,10 @@ Threading advantages:
 ## Acknowledgements
 
 This plugin was initially inspired by Scott Persinger's blog post on how to use fork
-in rails for background processing.
-    http://geekblog.vodpod.com/?p=26
+in rails for background processing (link no longer available).
 
-Further inspiration for the threading implementation came from Jonathon Rochkind's
-blog post on threading in rails.
-    http://bibwild.wordpress.com/2007/08/28/threading-in-rails/
+Further inspiration for the threading implementation came from [Jonathon Rochkind's
+blog post](http://bibwild.wordpress.com/2007/08/28/threading-in-rails/) on threading in rails.
 
 Also thanks to all who have helped debug problems and suggest improvements
 including:
