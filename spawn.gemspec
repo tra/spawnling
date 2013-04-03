@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{spawn}
+  s.name = "spawn-block"
   s.version = "2.0"
   s.required_rubygems_version = ">= 1.3.6"
 
@@ -22,7 +22,7 @@ threads (see lib/patches.rb).}
   exclude_folders = 'spec/rails/{doc,lib,log,nbproject,tmp,vendor,test}'
   exclude_files = Dir['**/*.log'] + Dir[exclude_folders+'/**/*'] + Dir[exclude_folders]
   s.files = Dir['{examples,lib,tasks,spec}/**/*'] +
-    %w(CHANGELOG LICENSE README.markdown init.rb) -
+    %w(CHANGELOG LICENSE README.md init.rb) -
     exclude_files
   s.require_paths = ["lib"]
 end

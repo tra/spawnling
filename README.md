@@ -17,11 +17,24 @@ threads if you prefer using the threaded model over forking.
 
 ## Installation
 
-If you want to live on the edge of the master branch,
+The name of the gem is "spawn-block" (unfortunately somebody took the name "spawn" before
+I was able to convert this to a gem).
 
-    gem "spawn", :git => 'git://github.com/tra/spawn'
+### git
 
-in your Gemfile and use bundler to manage it (bundle install, bundle update).
+If you want to live on the latest master branch, add this to your Gemfile,
+
+    gem 'spawn-block', :git => 'git://github.com/tra/spawn'
+
+and use bundler to manage it (bundle install, bundle update).
+
+### rubygem
+
+If you'd rather install from the latest gem,
+
+    gem 'spawn-block', '~>2.0'
+
+### configure
 
 Make sure that ActiveRecord reconnects to your database automatically when needed,
 for instance put
