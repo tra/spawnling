@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = "spawn-block"
-  s.version = "2.0"
+  s.name = "spawnling"
+  s.version = "2.1"
   s.required_rubygems_version = ">= 1.3.6"
 
   s.authors = ['Tom Anderson']

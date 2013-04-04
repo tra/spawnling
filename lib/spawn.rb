@@ -217,6 +217,7 @@ class Spawn
     end
   end
 end
+Spawnling = Spawn
 
 # patches depends on Spawn so require it after the class
 require 'patches'
