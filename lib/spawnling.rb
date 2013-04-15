@@ -1,6 +1,6 @@
 require 'logger'
 
-class Spawn
+class Spawnling
   if defined? ::Rails
     RAILS_1_x = (::Rails::VERSION::MAJOR == 1) unless defined?(RAILS_1_x)
     RAILS_2_2 = ((::Rails::VERSION::MAJOR == 2 && ::Rails::VERSION::MINOR >= 2)) unless defined?(RAILS_2_2)
@@ -34,7 +34,7 @@ class Spawn
   # Set the options to use every time spawn is called unless specified
   # otherwise.  For example, in your environment, do something like
   # this:
-  #   Spawn::default_options = {:nice => 5}
+  #   Spawnling::default_options = {:nice => 5}
   # to default to using the :nice option with a value of 5 on every call.
   # Valid options are:
   #   :method => (:thread | :fork | :yield)
@@ -84,12 +84,12 @@ class Spawn
     @@punks = []
   end
   # register to kill marked children when parent exits
-  at_exit { Spawn.kill_punks }
+  at_exit { Spawnling.kill_punks }
 
   # Spawns a long-running section of code and returns the ID of the spawned process.
   # By default the process will be a forked process.   To use threading, pass
   # :method => :thread or override the default behavior in the environment by setting
-  # 'Spawn::method :thread'.
+  # 'Spawnling::method :thread'.
   def initialize(opts = {})
     raise "Must give block of code to be spawned" unless block_given?
     options = @@default_options.merge(symbolize_options(opts))
@@ -149,7 +149,7 @@ class Spawn
         Process.setpriority(Process::PRIO_PROCESS, 0, options[:nice]) if options[:nice]
 
         # disconnect from the listening socket, et al
-        Spawn.close_resources
+        Spawnling.close_resources
         if defined?(Rails)
           # get a new database connection so the parent can keep the original one
           ActiveRecord::Base.spawn_reconnect
@@ -175,7 +175,7 @@ class Spawn
           # ensure log is flushed since we are using exit!
           @@logger.flush if @@logger && @@logger.respond_to?(:flush)
           # this child might also have children to kill if it called spawn
-          Spawn.kill_punks
+          Spawnling.kill_punks
           # this form of exit doesn't call at_exit handlers
           exit!(0)
         end
@@ -194,7 +194,7 @@ class Spawn
       @@logger.debug "spawn> death row = #{@@punks.inspect}" if @@logger
     end
 
-    # return Spawn::Id.new(:fork, child)
+    # return Spawnling::Id.new(:fork, child)
     return child
   end
 
@@ -217,7 +217,8 @@ class Spawn
     end
   end
 end
-Spawnling = Spawn
+# backwards compatibility unless someone is using the "other" spawn gem
+Spawn = Spawnling unless defined? Spawn
 
 # patches depends on Spawn so require it after the class
 require 'patches'

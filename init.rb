@@ -1,1 +1,1 @@
-require 'spawn'
+require 'spawnling'

@@ -1,12 +1,16 @@
 #News
 
-Now runs with ruby 1.9 (and later).  Because ruby "stole" the name "spawn", this gem
-now has been redefined to use "Spawn.new(&block)" instead of "spawn(&block)".  Other
+2013-4-15 gem renamed from "spawn-block" (lame) to "spawnling" (awesome).  Sadly the
+name "spawn" was taken before I got around to making this into a gem so I decided to
+give it a new name and a new home.
+
+Also, now runs with ruby 1.9 (and later).  Because ruby "stole" the name "spawn", this gem
+now has been redefined to use "Spawnling.new(&block)" instead of "spawn(&block)".  Other
 than that nothing has changed in the basic usage.  Read below for detailed usage.
 
-# Spawn
+# Spawnling
 
-This gem provides a 'Spawn' class to easily fork OR thread long-running sections of
+This gem provides a 'Spawnling' class to easily fork OR thread long-running sections of
 code so that your application can return results to your users more quickly.
 It works by creating new database connections in ActiveRecord::Base for the
 spawned block so that you don't have to worry about database connections working,
@@ -50,7 +54,7 @@ into your config/database.yml.
 Here's a simple example of how to demonstrate the spawn plugin.
 In one of your controllers, insert this code (after installing the plugin of course):
 ```ruby
-Spawn.new do
+Spawnling.new do
   logger.info("I feel sleepy...")
   sleep 11
   logger.info("Time to wake up!")
@@ -60,17 +64,17 @@ If everything is working correctly, your controller should finish quickly then y
 the last log message several seconds later.
 
 If you need to wait for the spawned processes/threads, then pass the objects returned by
-spawn to Spawn.wait(), like this:
+spawn to Spawnling.wait(), like this:
 ```ruby
 spawns = []
 N.times do |i|
   # spawn N blocks of code
-  spawns << Spawn.new do
+  spawns << Spawnling.new do
     something(i)
   end
 end
 # wait for all N blocks of code to finish running
-Spawn.wait(spawns)
+Spawnling.wait(spawns)
 ```
 ## Options
 
@@ -89,7 +93,7 @@ Any option to spawn can be set as a default so that you don't have to pass them 
 to every call of spawn.   To configure the spawn default options, add a line to
 your configuration file(s) like this:
 ```ruby
-  Spawn::default_options {:method => :thread}
+  Spawnling.default_options {:method => :thread}
 ```
 If you don't set any default options, the :method will default to :fork.  To
 specify different values for different environments, add the default_options call to
@@ -97,9 +101,9 @@ he appropriate environment file (development.rb, test.rb).   For testing you can
 the default :method to :yield so that the code is run inline.
 ```ruby
   # in environment.rb
-  Spawn.method :method => :fork, :nice => 7
+  Spawnling.method :method => :fork, :nice => 7
   # in test.rb, will override the environment.rb setting
-  Spawn.method :method => :yield
+  Spawnling.method :method => :yield
 ```
 This allows you to set your production and development environments to use different
 methods according to your needs.
@@ -109,7 +113,7 @@ methods according to your needs.
 If you want your forked child to run at a lower priority than the parent process, pass in
 the :nice option like this:
 ```ruby
-Spawn.new(:nice => 7) do
+Spawnling.new(:nice => 7) do
   do_something_nicely
 end
 ```
@@ -120,7 +124,7 @@ do threading either by telling the spawn method when you call it or by configuri
 environment.
 For example, this is how you can tell spawn to use threading on the call,
 ```ruby
-Spawn.new(:method => :thread) do
+Spawnling.new(:method => :thread) do
   something
 end
 ```
@@ -149,7 +153,7 @@ listing the running processes (ps).
 For example, if you do something like this,
 ```ruby
 3.times do |i|
- Spawn.new(:argv => "spawn -#{i}-") do
+ Spawnling.new(:argv => "spawn -#{i}-") do
    something(i)
   end
 end

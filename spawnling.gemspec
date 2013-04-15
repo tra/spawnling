@@ -2,16 +2,16 @@
 
 Gem::Specification.new do |s|
   s.name = "spawnling"
-  s.version = "2.1"
+  s.version = "2.1.1"
   s.required_rubygems_version = ">= 1.3.6"
 
   s.authors = ['Tom Anderson']
   s.email   = ['tom@squeat.com']
   s.date = '2010-08-08'
 
-  s.homepage = %q{http://github.com/tra/spawn}
+  s.homepage = %q{http://github.com/tra/spawnling}
   s.summary = %q{Easily fork OR thread long-running sections of code in Ruby}
-  s.description = %q{This plugin provides a 'Spawn' class to easily fork OR
+  s.description = %q{This plugin provides a 'Spawnling' class to easily fork OR
 thread long-running sections of code so that your application can return
 results to your users more quickly.  This plugin works by creating new database
 connections in ActiveRecord::Base for the spawned block.
