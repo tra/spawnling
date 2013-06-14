@@ -130,6 +130,6 @@ if need_passenger_patch
   end
 end
 
-if defined?(::ActiveSupport::Cache::MemCacheStore) && ::ActiveSupport::Cache.autoload?(:MemCacheStore).nil?
+if defined?(::ActiveSupport::Cache::MemCacheStore)
   ::ActiveSupport::Cache::MemCacheStore.delegate :reset, :to => :@data
 end
