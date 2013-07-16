@@ -186,7 +186,7 @@ class Spawnling
     Process.detach(child)
 
     # remove dead children from the target list to avoid memory leaks
-    @@punks.delete_if {|punk| !alive?(punk)}
+    @@punks.delete_if {|punk| !Spawn.alive?(punk)}
 
     # mark this child for death when this process dies
     if options[:kill]
