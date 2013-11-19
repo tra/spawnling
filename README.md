@@ -21,14 +21,14 @@ threads if you prefer using the threaded model over forking.
 
 ## Installation
 
-The name of the gem is "spawn-block" (unfortunately somebody took the name "spawn" before
+The name of the gem is "spawnling" (unfortunately somebody took the name "spawn" before
 I was able to convert this to a gem).
 
 ### git
 
 If you want to live on the latest master branch, add this to your Gemfile,
 
-    gem 'spawn-block', :git => 'git://github.com/tra/spawn'
+    gem 'spawnling', :git => 'git://github.com/tra/spawnling'
 
 and use bundler to manage it (bundle install, bundle update).
 
@@ -36,7 +36,7 @@ and use bundler to manage it (bundle install, bundle update).
 
 If you'd rather install from the latest gem,
 
-    gem 'spawn-block', '~>2.0'
+    gem 'spawnling', '~>2.1'
 
 ### configure
 
