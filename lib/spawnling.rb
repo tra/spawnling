@@ -100,7 +100,7 @@ class Spawnling
       options[:method].call(proc { yield })
     elsif options[:method] == :thread
       # for versions before 2.2, check for allow_concurrency
-     if RAILS_2_2 || ActiveRecord::Base.respond_to?(:allow_concurrency) ?
+     if RAILS_2_2 || (defined?(ActiveRecord) && ActiveRecord::Base.respond_to?(:allow_concurrency)) ?
           ActiveRecord::Base.allow_concurrency :  Rails.application.config.allow_concurrency
        @type = :thread
        @handle = thread_it(options) { yield }
@@ -152,7 +152,7 @@ class Spawnling
         Spawnling.close_resources
         if defined?(Rails)
           # get a new database connection so the parent can keep the original one
-          ActiveRecord::Base.spawn_reconnect
+          ActiveRecord::Base.spawn_reconnect if defined?(ActiveRecord)
           # close the memcache connection so the parent can keep the original one
           Rails.cache.reset if Rails.cache.respond_to?(:reset)
         end
@@ -203,7 +203,7 @@ class Spawnling
     ActiveRecord::Base.verify_active_connections!() if defined?(ActiveRecord)
     thr = Thread.new do
       # run the long-running code block
-      ActiveRecord::Base.connection_pool.with_connection { yield  }
+      ActiveRecord::Base.connection_pool.with_connection { yield  } if defined?(ActiveRecord)
     end
     thr.priority = -options[:nice] if options[:nice]
     return thr
