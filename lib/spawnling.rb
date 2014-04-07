@@ -16,7 +16,8 @@ class Spawnling
     :method => ((RUBY_PLATFORM =~ /(win32|mingw32|java)/) ? :thread : :fork),
     :nice   => nil,
     :kill   => false,
-    :argv   => nil
+    :argv   => nil,
+    :detach => true
   }
 
   # things to close in child process
@@ -42,6 +43,9 @@ class Spawnling
   #   :kill   => whether or not the parent process will kill the
   #              spawned child process when the parent exits
   #   :argv   => changes name of the spawned process as seen in ps
+  #   :detach => whether or not Process.detach is called for spawned child
+  #              processes.  You must wait for children on your own if you
+  #              set this to false
   def self.default_options(options = {})
     @@default_options.merge!(options)
     @@logger.info "spawn> default options = #{options.inspect}" if @@logger
@@ -183,7 +187,7 @@ class Spawnling
     end
 
     # detach from child process (parent may still wait for detached process if they wish)
-    Process.detach(child)
+    Process.detach(child) if options[:detach]
 
     # remove dead children from the target list to avoid memory leaks
     @@punks.delete_if {|punk| !Spawn.alive?(punk)}
