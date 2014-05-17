@@ -26,5 +26,6 @@ threads (see lib/patches.rb).}
   s.add_development_dependency 'bundler'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec'
+  s.add_development_dependency 'coveralls'
   s.add_development_dependency 'rails'
 end
