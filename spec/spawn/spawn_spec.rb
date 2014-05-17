@@ -1,62 +1,47 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-describe Spawn do
+describe Spawnling do
 
   describe "yields" do
     before(:each) do
-      Spawn::default_options :method => :yield
-      define_spawned
+      Spawnling::default_options :method => :yield
     end
   
     it "should be able to yield directly" do
-      Spawned.hello.should == "hello"
+      spawn!.should == "hello"
     end
   end
   
   describe "override" do
     before(:each) do
-      Spawn::default_options :method => proc{ "foo" }
-      define_spawned
+      Spawnling::default_options :method => proc{ "foo" }
     end
     
     it "should be able to return a proc" do
-      Spawned.hello.should == "foo"
+      spawn!.should == "foo"
     end
     
   end
   
   describe "delegate to a proc" do
     before(:each) do
-      Spawn::default_options :method => proc{ |block| block }
-      define_spawned
+      Spawnling::default_options :method => proc{ |block| block }
     end
     
     it "should be able to return a proc" do
-      Spawned.hello.should be_kind_of(Proc)
+      spawn!.should be_kind_of(Proc)
     end
   
     it "should be able to return a proc" do
-      Spawned.hello.call.should == "hello"
+      spawn!.call.should == "hello"
     end
     
   end
   
-  after(:each) do
-    Object.send(:remove_const, :Spawned)
-  end
-  
-  def define_spawned
-    cls = Class.new do
-    
-      def self.hello
-        Spawn.run do
-          "hello"
-        end
-      end
-      
+  def spawn!
+    Spawnling.run do
+      "hello"
     end
-    
-    Object.const_set :Spawned, cls
   end
   
 end
