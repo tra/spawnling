@@ -91,6 +91,10 @@ class Spawnling
   # :method => :thread or override the default behavior in the environment by setting
   # 'Spawnling::method :thread'.
   def initialize(opts = {})
+    self.class.run(opts)
+  end
+
+  def self.run(opts = {})
     raise "Must give block of code to be spawned" unless block_given?
     options = @@default_options.merge(symbolize_options(opts))
     # setting options[:method] will override configured value in default_options[:method]
@@ -210,7 +214,7 @@ class Spawnling
   end
 
   # In case we don't have rails, can't call opts.symbolize_keys
-  def symbolize_options(hash)
+  def self.symbolize_options(hash)
     hash.inject({}) do |new_hash, (key, value)|
       new_hash[key.to_sym] = value
       new_hash

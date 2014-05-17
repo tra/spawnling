@@ -4,7 +4,7 @@ describe Spawn do
 
   describe "yields" do
     before(:each) do
-      Spawn::method :yield
+      Spawn::default_options :method => :yield
       define_spawned
     end
   
@@ -15,7 +15,7 @@ describe Spawn do
   
   describe "override" do
     before(:each) do
-      Spawn::method(proc{ "foo" })
+      Spawn::default_options :method => proc{ "foo" }
       define_spawned
     end
     
@@ -27,7 +27,7 @@ describe Spawn do
   
   describe "delegate to a proc" do
     before(:each) do
-      Spawn::method( proc{ |block| block  })
+      Spawn::default_options :method => proc{ |block| block }
       define_spawned
     end
     
@@ -47,10 +47,9 @@ describe Spawn do
   
   def define_spawned
     cls = Class.new do
-      extend Spawn
     
       def self.hello
-        spawn do
+        Spawn.run do
           "hello"
         end
       end

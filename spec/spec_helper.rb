@@ -1,13 +1,10 @@
 require 'rubygems'
 gem 'rspec'
-require 'spec'
-require 'active_record'
-require 'action_controller'
-require 'rails/version'
+require 'rspec'
 
 $:.unshift(File.join(File.dirname(__FILE__), %w[.. lib]))
 
-require 'spawn'
+require 'spawnling'
 Spec::Runner.configure do |config|
 
 end

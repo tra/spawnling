@@ -1,3 +1,12 @@
+Spawnling
+=========
+
+[![Gem Version](https://badge.fury.io/rb/geokit.png)](http://badge.fury.io/rb/geokit)
+[![Build Status](https://travis-ci.org/tra/spawnling.png?branch=master)](https://travis-ci.org/tra/spawnling)
+[![Coverage Status](https://coveralls.io/repos/tra/spawnling/badge.png)](https://coveralls.io/r/tra/spawnling)
+[![Dependency Status](https://gemnasium.com/tra/spawnling.png)](https://gemnasium.com/tra/spawnling)
+[![Code Climate](https://codeclimate.com/github/tra/spawnling.png)](https://codeclimate.com/github/tra/spawnling)
+
 #News
 
 2013-4-15 gem renamed from "spawn-block" (lame) to "spawnling" (awesome).  Sadly the

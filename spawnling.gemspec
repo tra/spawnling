@@ -25,4 +25,9 @@ threads (see lib/patches.rb).}
     %w(CHANGELOG LICENSE README.md init.rb) -
     exclude_files
   s.require_paths = ["lib"]
+
+  s.add_development_dependency 'bundler'
+  s.add_development_dependency 'rake'
+  s.add_development_dependency 'rspec'
+  s.add_development_dependency 'rails'
 end
