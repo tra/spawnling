@@ -1,8 +1,11 @@
 # -*- encoding: utf-8 -*-
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'spawnling/version'
 
 Gem::Specification.new do |s|
   s.name          = "spawnling"
-  s.version       = "2.1.1"
+  s.version       = Spawnling::VERSION
 
   s.authors       = ['Tom Anderson']
   s.email         = ['tom@squeat.com']
