@@ -90,11 +90,11 @@ class Spawnling
   # By default the process will be a forked process.   To use threading, pass
   # :method => :thread or override the default behavior in the environment by setting
   # 'Spawnling::method :thread'.
-  def initialize(opts = {})
-    self.class.run(opts)
+  def initialize(opts = {}, &block)
+    self.class.run(opts, &block)
   end
 
-  def self.run(opts = {})
+  def self.run(opts = {}, &block)
     raise "Must give block of code to be spawned" unless block_given?
     options = @@default_options.merge(symbolize_options(opts))
     # setting options[:method] will override configured value in default_options[:method]
