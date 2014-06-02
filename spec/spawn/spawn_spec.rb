@@ -6,6 +6,14 @@ describe Spawnling do
     before(:each) do
       Spawnling::default_options :method => :yield
     end
+
+    it "should work in new block" do
+      object = double('object')
+      object.should_receive(:do_something)
+      Spawnling.new do
+        object.do_something
+      end
+    end
   
     it "should be able to yield directly" do
       spawn!.should == "hello"
