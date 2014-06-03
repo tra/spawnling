@@ -30,6 +30,3 @@ if ENV['COVERAGE']
 end
 
 require 'spawnling'
-Spec::Runner.configure do |config|
-
-end
