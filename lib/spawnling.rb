@@ -91,10 +91,10 @@ class Spawnling
   # :method => :thread or override the default behavior in the environment by setting
   # 'Spawnling::method :thread'.
   def initialize(opts = {}, &block)
-    self.class.run(opts, &block)
+    self.run(opts, &block)
   end
 
-  def self.run(opts = {}, &block)
+  def run(opts = {}, &block)
     raise "Must give block of code to be spawned" unless block_given?
     options = @@default_options.merge(symbolize_options(opts))
     # setting options[:method] will override configured value in default_options[:method]
@@ -104,10 +104,10 @@ class Spawnling
       options[:method].call(proc { yield })
     elsif options[:method] == :thread
       # for versions before 2.2, check for allow_concurrency
-     if RAILS_2_2 || (defined?(ActiveRecord) && ActiveRecord::Base.respond_to?(:allow_concurrency)) ?
-          ActiveRecord::Base.allow_concurrency :  Rails.application.config.allow_concurrency
-       @type = :thread
-       @handle = thread_it(options) { yield }
+      if RAILS_2_2 || (defined?(ActiveRecord) && ActiveRecord::Base.respond_to?(:allow_concurrency)) ?
+        ActiveRecord::Base.allow_concurrency :  Rails.application.config.allow_concurrency
+        @type = :thread
+        @handle = thread_it(options) { yield }
       else
         @@logger.error("spawn(:method=>:thread) only allowed when allow_concurrency=true")
         raise "spawn requires config.active_record.allow_concurrency=true when used with :method=>:thread"
@@ -214,7 +214,7 @@ class Spawnling
   end
 
   # In case we don't have rails, can't call opts.symbolize_keys
-  def self.symbolize_options(hash)
+  def symbolize_options(hash)
     hash.inject({}) do |new_hash, (key, value)|
       new_hash[key.to_sym] = value
       new_hash
