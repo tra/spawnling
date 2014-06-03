@@ -104,8 +104,7 @@ class Spawnling
       options[:method].call(proc { yield })
     elsif options[:method] == :thread
       # for versions before 2.2, check for allow_concurrency
-     if RAILS_2_2 || (defined?(ActiveRecord) && ActiveRecord::Base.respond_to?(:allow_concurrency)) ?
-          ActiveRecord::Base.allow_concurrency :  Rails.application.config.allow_concurrency
+     if allow_concurrency?
        @type = :thread
        @handle = thread_it(options) { yield }
       else
@@ -115,6 +114,17 @@ class Spawnling
     else
       @type = :fork
       @handle = fork_it(options) { yield }
+    end
+  end
+
+  def self.allow_concurrency?
+    return true if RAILS_2_2
+    if defined?(ActiveRecord) && ActiveRecord::Base.respond_to?(:allow_concurrency)
+      ActiveRecord::Base.allow_concurrency
+    elsif defined?(Rails)
+      Rails.application.config.allow_concurrency
+    else
+      true # assume user knows what they are doing
     end
   end
 
@@ -137,7 +147,7 @@ class Spawnling
 
   protected
 
-  def fork_it(options)
+  def self.fork_it(options)
     # The problem with rails is that it only has one connection (per class),
     # so when we fork a new process, we need to reconnect.
     @@logger.debug "spawn> parent PID = #{Process.pid}" if @@logger
@@ -202,12 +212,16 @@ class Spawnling
     return child
   end
 
-  def thread_it(options)
+  def self.thread_it(options)
     # clean up stale connections from previous threads
     ActiveRecord::Base.verify_active_connections!() if defined?(ActiveRecord)
     thr = Thread.new do
       # run the long-running code block
-      ActiveRecord::Base.connection_pool.with_connection { yield  } if defined?(ActiveRecord)
+      if defined?(ActiveRecord)
+        ActiveRecord::Base.connection_pool.with_connection { yield  }
+      else
+        yield
+      end
     end
     thr.priority = -options[:nice] if options[:nice]
     return thr

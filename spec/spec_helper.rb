@@ -4,7 +4,9 @@ require 'rspec'
 
 $:.unshift(File.join(File.dirname(__FILE__), %w[.. lib]))
 
-MINIMUM_COVERAGE = 28
+require 'store'
+
+MINIMUM_COVERAGE = 40
 
 if ENV['COVERAGE']
   require 'simplecov'

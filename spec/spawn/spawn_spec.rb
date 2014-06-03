@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require 'spec_helper'
 
 describe Spawnling do
 
@@ -43,12 +43,45 @@ describe Spawnling do
     it "should be able to return a proc" do
       spawn!.call.should == "hello"
     end
-    
+  end
+
+  describe "thread it" do
+    before(:each) do
+      Store.reset!
+      Spawnling::default_options :method => :thread
+    end
+
+    it "should be able to return a proc" do
+      Store.flag.should be_false
+      spawn_flag!
+      sleep(0.1) # wait for file to finish writing
+      Store.flag.should be_true
+    end
   end
   
+  describe "fork it" do
+    before(:each) do
+      Store.reset!
+      Spawnling::default_options :method => :fork
+    end
+
+    it "should be able to return a proc" do
+      Store.flag.should be_false
+      spawn_flag!
+      sleep(0.1) # wait for file to finish writing
+      Store.flag.should be_true
+    end
+  end
+
   def spawn!
     Spawnling.run do
       "hello"
+    end
+  end
+
+  def spawn_flag!
+    Spawnling.new do
+      Store.flag!
     end
   end
   
