@@ -28,6 +28,10 @@ class Spawnling
   # in some environments, logger isn't defined
   @@logger = defined?(::Rails) ? ::Rails.logger : ::Logger.new(STDERR)
 
+  def self.logger=(logger)
+    @@logger = logger
+  end
+
   attr_accessor :type
   attr_accessor :handle
 

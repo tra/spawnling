@@ -30,3 +30,5 @@ if ENV['COVERAGE']
 end
 
 require 'spawnling'
+
+Spawnling.logger = nil
