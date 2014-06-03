@@ -52,10 +52,10 @@ describe Spawnling do
     end
 
     it "should be able to return a proc" do
-      Store.flag.should be_false
+      Store.flag.should be_falsey
       spawn_flag!
       sleep(0.1) # wait for file to finish writing
-      Store.flag.should be_true
+      Store.flag.should be_truthy
     end
   end
   
@@ -66,10 +66,10 @@ describe Spawnling do
     end
 
     it "should be able to return a proc" do
-      Store.flag.should be_false
+      Store.flag.should be_falsey
       spawn_flag!
       sleep(0.1) # wait for file to finish writing
-      Store.flag.should be_true
+      Store.flag.should be_truthy
     end
   end
 
