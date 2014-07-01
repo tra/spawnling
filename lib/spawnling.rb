@@ -125,7 +125,7 @@ class Spawnling
     return true if RAILS_2_2
     if defined?(ActiveRecord) && ActiveRecord::Base.respond_to?(:allow_concurrency)
       ActiveRecord::Base.allow_concurrency
-    elsif defined?(Rails)
+    elsif defined?(Rails) && Rails.application
       Rails.application.config.allow_concurrency
     else
       true # assume user knows what they are doing
@@ -218,11 +218,14 @@ class Spawnling
 
   def self.thread_it(options)
     # clean up stale connections from previous threads
-    ActiveRecord::Base.verify_active_connections!() if defined?(ActiveRecord)
+    if defined?(ActiveRecord)
+      ActiveRecord::Base.verify_active_connections! if ActiveRecord::Base.respond_to?(:verify_active_connections)
+      ActiveRecord::Base.clear_active_connections! if ActiveRecord::Base.respond_to?(:clear_active_connections!)
+    end
     thr = Thread.new do
       # run the long-running code block
       if defined?(ActiveRecord)
-        ActiveRecord::Base.connection_pool.with_connection { yield  }
+        ActiveRecord::Base.connection_pool.with_connection { yield }
       else
         yield
       end
