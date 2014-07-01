@@ -5,9 +5,22 @@ require 'rspec'
 $:.unshift(File.join(File.dirname(__FILE__), %w[.. lib]))
 
 require 'store'
+if ENV['RAILS']
+  require 'rails'
+  require 'active_record'
+end
+ActiveRecord::Base.establish_connection :adapter => :nulldb if defined?(ActiveRecord)
 
 MINIMUM_COVERAGE = 40
 
+if ENV['RAILS']
+  class Application < Rails::Application
+    config.log_level = :warn
+    config.logger = Logger.new(STDOUT)
+  end
+  Application.initialize!
+  Application.config.allow_concurrency = true
+end
 if ENV['COVERAGE']
   require 'simplecov'
   require 'coveralls'
@@ -31,4 +44,3 @@ end
 
 require 'spawnling'
 
-Spawnling.logger = nil

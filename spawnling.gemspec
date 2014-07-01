@@ -31,4 +31,5 @@ threads (see lib/patches.rb).}
   s.add_development_dependency 'rspec', '~> 2.0'
   s.add_development_dependency 'coveralls'
   s.add_development_dependency 'rails'
+  s.add_development_dependency 'activerecord-nulldb-adapter'
 end
