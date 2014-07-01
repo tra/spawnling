@@ -21,6 +21,11 @@ if ENV['RAILS']
   Application.initialize!
   Application.config.allow_concurrency = true
 end
+
+if ENV['MEMCACHE']
+  Application.config.cache_store = :mem_cache_store
+end
+
 if ENV['COVERAGE']
   require 'simplecov'
   require 'coveralls'
