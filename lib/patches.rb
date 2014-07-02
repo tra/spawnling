@@ -2,7 +2,11 @@ if defined?(ActiveRecord)
   # see activerecord/lib/active_record/connection_adaptors/abstract/connection_specification.rb
   class ActiveRecord::Base
     # reconnect without disconnecting
-    if ::Spawnling::RAILS_3_x || ::Spawnling::RAILS_2_2
+    if ::Spawnling::RAILS_3_x
+      def self.spawn_reconnect(klass=self)
+        ActiveRecord::Base.connection.reconnect!
+      end
+    elsif ::Spawnling::RAILS_2_2
       def self.spawn_reconnect(klass=self)
         # keep ancestors' connection_handlers around to avoid them being garbage collected in the forked child
         @@ancestor_connection_handlers ||= []
