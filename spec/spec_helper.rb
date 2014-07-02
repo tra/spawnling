@@ -11,7 +11,7 @@ if ENV['RAILS']
 end
 ActiveRecord::Base.establish_connection :adapter => :nulldb if defined?(ActiveRecord)
 
-MINIMUM_COVERAGE = 40
+MINIMUM_COVERAGE = 54
 
 if ENV['RAILS']
   class Application < Rails::Application
@@ -39,6 +39,7 @@ if ENV['COVERAGE']
   SimpleCov.start do
     add_filter '/vendor/'
     add_filter '/spec/'
+    add_filter '/lib/patches.rb'
     add_group 'lib', 'lib'
   end
   SimpleCov.at_exit do
