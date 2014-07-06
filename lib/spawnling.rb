@@ -144,7 +144,7 @@ class Spawnling
       end
     end
     # clean up connections from expired threads
-    ActiveRecord::Base.verify_active_connections!() if defined?(ActiveRecord)
+    clean_connections
   end
 
   protected
@@ -216,10 +216,7 @@ class Spawnling
 
   def self.thread_it(options)
     # clean up stale connections from previous threads
-    if defined?(ActiveRecord)
-      ActiveRecord::Base.verify_active_connections! if ActiveRecord::Base.respond_to?(:verify_active_connections!)
-      ActiveRecord::Base.clear_active_connections! if ActiveRecord::Base.respond_to?(:clear_active_connections!)
-    end
+    clean_connections
     thr = Thread.new do
       # run the long-running code block
       if defined?(ActiveRecord)
@@ -230,6 +227,12 @@ class Spawnling
     end
     thr.priority = -options[:nice] if options[:nice]
     return thr
+  end
+
+  def self.clean_connections
+    return unless defined? ActiveRecord
+    ActiveRecord::Base.verify_active_connections! if ActiveRecord::Base.respond_to?(:verify_active_connections!)
+    ActiveRecord::Base.clear_active_connections! if ActiveRecord::Base.respond_to?(:clear_active_connections!)
   end
 
   # In case we don't have rails, can't call opts.symbolize_keys
