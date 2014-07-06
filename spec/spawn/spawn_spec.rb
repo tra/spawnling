@@ -63,7 +63,7 @@ describe Spawnling do
       instance.type.should be(:thread)
     end
 
-    it "instance should have a hanlde" do
+    it "instance should have a handle" do
       instance = Spawnling.new{}
       instance.handle.should_not be_nil
     end
@@ -87,7 +87,7 @@ describe Spawnling do
       instance.type.should be(:fork)
     end
 
-    it "instance should have a hanlde" do
+    it "instance should have a handle" do
       instance = Spawnling.new{}
       instance.handle.should_not be_nil
     end
