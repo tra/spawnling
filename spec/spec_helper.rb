@@ -11,7 +11,7 @@ if ENV['RAILS']
 end
 ActiveRecord::Base.establish_connection :adapter => :nulldb if defined?(ActiveRecord)
 
-MINIMUM_COVERAGE = 54
+MINIMUM_COVERAGE = 53
 
 if ENV['RAILS']
   class Application < Rails::Application
