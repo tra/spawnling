@@ -7,8 +7,8 @@ Gem::Specification.new do |s|
   s.name          = "spawnling"
   s.version       = Spawnling::VERSION
 
-  s.authors       = ['Tom Anderson']
-  s.email         = ['tom@squeat.com']
+  s.authors       = ['Tom Anderson', 'Michael Noack']
+  s.email         = ['tom@squeat.com', 'michael+spawnling@noack.com.au']
 
   s.homepage      = %q{http://github.com/tra/spawnling}
   s.license       = "MIT"
