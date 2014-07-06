@@ -95,7 +95,7 @@ class Spawnling
   # :method => :thread or override the default behavior in the environment by setting
   # 'Spawnling::method :thread'.
   def initialize(opts = {}, &block)
-    self.class.run(opts, &block)
+    @type, @handle = self.class.run(opts, &block)
   end
 
   def self.run(opts = {}, &block)
@@ -109,15 +109,13 @@ class Spawnling
     elsif options[:method] == :thread
       # for versions before 2.2, check for allow_concurrency
      if allow_concurrency?
-       @type = :thread
-       @handle = thread_it(options) { yield }
+       return :thread, thread_it(options) { yield }
       else
         @@logger.error("spawn(:method=>:thread) only allowed when allow_concurrency=true")
         raise "spawn requires config.active_record.allow_concurrency=true when used with :method=>:thread"
       end
     else
-      @type = :fork
-      @handle = fork_it(options) { yield }
+      return :fork, fork_it(options) { yield }
     end
   end
 
