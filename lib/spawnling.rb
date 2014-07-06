@@ -219,7 +219,7 @@ class Spawnling
   def self.thread_it(options)
     # clean up stale connections from previous threads
     if defined?(ActiveRecord)
-      ActiveRecord::Base.verify_active_connections! if ActiveRecord::Base.respond_to?(:verify_active_connections)
+      ActiveRecord::Base.verify_active_connections! if ActiveRecord::Base.respond_to?(:verify_active_connections!)
       ActiveRecord::Base.clear_active_connections! if ActiveRecord::Base.respond_to?(:clear_active_connections!)
     end
     thr = Thread.new do
