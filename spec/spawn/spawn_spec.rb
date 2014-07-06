@@ -14,32 +14,32 @@ describe Spawnling do
         object.do_something
       end
     end
-  
+
     it "should be able to yield directly" do
       spawn!.should == "hello"
     end
   end
-  
+
   describe "override" do
     before(:each) do
       Spawnling::default_options :method => proc{ "foo" }
     end
-    
+
     it "should be able to return a proc" do
       spawn!.should == "foo"
     end
-    
+
   end
-  
+
   describe "delegate to a proc" do
     before(:each) do
       Spawnling::default_options :method => proc{ |block| block }
     end
-    
+
     it "should be able to return a proc" do
       spawn!.should be_kind_of(Proc)
     end
-  
+
     it "should be able to return a proc" do
       spawn!.call.should == "hello"
     end
@@ -57,8 +57,18 @@ describe Spawnling do
       sleep(0.1) # wait for file to finish writing
       Store.flag.should be_truthy
     end
+
+    it "instance should have a type" do
+      instance = Spawnling.new{}
+      instance.type.should be(:thread)
+    end
+
+    it "instance should have a handle" do
+      instance = Spawnling.new{}
+      instance.handle.should_not be_nil
+    end
   end
-  
+
   describe "fork it" do
     before(:each) do
       Store.reset!
@@ -70,6 +80,16 @@ describe Spawnling do
       spawn_flag!
       sleep(0.1) # wait for file to finish writing
       Store.flag.should be_truthy
+    end
+
+    it "instance should have a type" do
+      instance = Spawnling.new{}
+      instance.type.should be(:fork)
+    end
+
+    it "instance should have a handle" do
+      instance = Spawnling.new{}
+      instance.handle.should_not be_nil
     end
   end
 
@@ -84,5 +104,5 @@ describe Spawnling do
       Store.flag!
     end
   end
-  
+
 end
