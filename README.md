@@ -96,6 +96,9 @@ The options you can pass to spawn are:
   <tr><td>:kill</td><td>boolean value indicating whether the parent should kill the spawned process
    when it exits (only valid when :method => :fork)</td></tr>
   <tr><td>:argv</td><td>string to override the process name</td></tr>
+  <tr><td>:detach</td><td>boolean value indicating whether the parent should Process.detach the
+   spawned processes. (defaults to true).  You *must* Spawnling.wait or Process.wait if you use this.
+   Changing this allows you to wait for the first child to exit instead of waiting for all of them.</td></tr>
 </table>
 
 Any option to spawn can be set as a default so that you don't have to pass them in
