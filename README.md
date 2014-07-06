@@ -105,7 +105,7 @@ Any option to spawn can be set as a default so that you don't have to pass them 
 to every call of spawn.   To configure the spawn default options, add a line to
 your configuration file(s) like this:
 ```ruby
-  Spawnling.default_options {:method => :thread}
+  Spawnling::default_options :method => :thread
 ```
 If you don't set any default options, the :method will default to :fork.  To
 specify different values for different environments, add the default_options call to
@@ -113,9 +113,9 @@ he appropriate environment file (development.rb, test.rb).   For testing you can
 the default :method to :yield so that the code is run inline.
 ```ruby
   # in environment.rb
-  Spawnling.method :method => :fork, :nice => 7
+  Spawnling::default_options :method => :fork, :nice => 7
   # in test.rb, will override the environment.rb setting
-  Spawnling.method :method => :yield
+  Spawnling::default_options :method => :yield
 ```
 This allows you to set your production and development environments to use different
 methods according to your needs.
