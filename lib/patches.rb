@@ -134,10 +134,12 @@ if need_passenger_patch
   end
 end
 
-class SpawnlingCache < Rails::Railtie
-  initializer "cache" do
-    if defined?(::ActiveSupport::Cache::MemCacheStore) && Rails.cache.class.name == 'ActiveSupport::Cache::MemCacheStore'
-      ::ActiveSupport::Cache::MemCacheStore.delegate :reset, :to => :@data
+if defined?(Rails)
+  class SpawnlingCache < Rails::Railtie
+    initializer "cache" do
+      if defined?(::ActiveSupport::Cache::MemCacheStore) && Rails.cache.class.name == 'ActiveSupport::Cache::MemCacheStore'
+        ::ActiveSupport::Cache::MemCacheStore.delegate :reset, :to => :@data
+      end
     end
   end
 end
