@@ -35,4 +35,5 @@ threads (see lib/patches.rb).}
   s.add_development_dependency 'rails'
   s.add_development_dependency 'activerecord-nulldb-adapter'
   s.add_development_dependency 'dalli'
+  s.add_development_dependency 'travis'
 end

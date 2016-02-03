@@ -16,3 +16,5 @@ matrix:
     - rvm: 1.9
       gemfile: gemfiles/rails4.gemfile
 script: "bundle exec rake spec"
+sudo: false
+cache: bundler
