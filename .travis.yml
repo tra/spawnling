@@ -15,4 +15,4 @@ matrix:
   exclude:
     - rvm: 1.8.7
       gemfile: gemfiles/rails4.gemfile
-script: "bundle exec rake coverage"
+script: "bundle exec rake spec"
