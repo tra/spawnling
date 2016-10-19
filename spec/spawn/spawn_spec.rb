@@ -1,6 +1,18 @@
 require 'spec_helper'
 
 describe Spawnling do
+  describe 'defaults' do
+    context 'when invalid method' do
+      specify {
+        expect {
+          Spawnling.new(method: :threads) { puts "never" }
+        }.to raise_error(
+          ArgumentError,
+          'method must be :yield, :thread, :fork or respond to method call'
+        )
+      }
+    end
+  end
 
   describe "yields" do
     before(:each) do
