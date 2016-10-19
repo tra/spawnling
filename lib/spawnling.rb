@@ -106,11 +106,10 @@ class Spawnling
     raise "Must give block of code to be spawned" unless block_given?
     options = @@default_options.merge(symbolize_options(opts))
     # setting options[:method] will override configured value in default_options[:method]
-    if options[:method] == :yield
+    case options.fetch(:method)
+    when :yield
       yield
-    elsif options[:method].respond_to?(:call)
-      options[:method].call(proc { yield })
-    elsif options[:method] == :thread
+    when :thread
       # for versions before 2.2, check for allow_concurrency
      if allow_concurrency?
        return :thread, thread_it(options) { yield }
@@ -118,8 +117,14 @@ class Spawnling
         @@logger.error("spawn(:method=>:thread) only allowed when allow_concurrency=true")
         raise "spawn requires config.active_record.allow_concurrency=true when used with :method=>:thread"
       end
-    else
+    when :fork
       return :fork, fork_it(options) { yield }
+    else
+      if options[:method].respond_to?(:call)
+        options[:method].call(proc { yield })
+      else
+        raise ArgumentError, 'method must be :yield, :thread, :fork or respond to method call'
+      end
     end
   end
 
