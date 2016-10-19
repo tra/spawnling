@@ -2,3 +2,5 @@
 *.gem
 .project
 foo
+coverage
+Gemfile.lock
