@@ -1,6 +1,0 @@
-source 'https://rubygems.org'
-gemspec :path => "../"
-
-group :development, :test do
-  gem 'rails', '~> 3.0'
-end

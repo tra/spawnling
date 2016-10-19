@@ -3,7 +3,6 @@ rvm:
   - 2.1
   - 2.3.0
 gemfile:
-  - gemfiles/rails3.gemfile
   - gemfiles/rails4.gemfile
 env:
   - NONE=true
