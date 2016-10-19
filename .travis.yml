@@ -1,7 +1,5 @@
 language: ruby
 rvm:
-  - 1.9
-  - 2.0
   - 2.1
   - 2.3.0
 gemfile:
@@ -11,10 +9,6 @@ env:
   - NONE=true
   - RAILS=true
   - RAILS=true MEMCACHE=true
-matrix:
-  exclude:
-    - rvm: 1.9
-      gemfile: gemfiles/rails4.gemfile
 script: "bundle exec rake spec"
 sudo: false
 cache: bundler
