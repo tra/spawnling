@@ -1,7 +1,7 @@
 Spawnling
 =========
 
-[![Gem Version](https://badge.fury.io/rb/spawnling.png)](http://badge.fury.io/rb/spawnling)
+[![Gem Version](https://badge.fury.io/rb/spawnling.png)](https://badge.fury.io/rb/spawnling)
 [![Build Status](https://travis-ci.org/tra/spawnling.png?branch=master)](https://travis-ci.org/tra/spawnling)
 [![Coverage Status](https://coveralls.io/repos/tra/spawnling/badge.png)](https://coveralls.io/r/tra/spawnling)
 [![Dependency Status](https://gemnasium.com/tra/spawnling.png)](https://gemnasium.com/tra/spawnling)
