@@ -37,7 +37,7 @@ I was able to convert this to a gem).
 
 If you want to live on the latest master branch, add this to your Gemfile,
 
-    gem 'spawnling', :git => 'git://github.com/tra/spawnling'
+    gem 'spawnling', :git => 'https://github.com/tra/spawnling'
 
 and use bundler to manage it (bundle install, bundle update).
 
