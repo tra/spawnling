@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.authors       = ['Tom Anderson', 'Michael Noack']
   s.email         = ['tom@squeat.com', 'michael+spawnling@noack.com.au']
 
-  s.homepage      = %q{http://github.com/tra/spawnling}
+  s.homepage      = %q{https://github.com/tra/spawnling}
   s.license       = "MIT"
   s.summary       = %q{Easily fork OR thread long-running sections of code in Ruby}
   s.description   = %q{This plugin provides a 'Spawnling' class to easily fork OR
