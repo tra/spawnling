@@ -28,7 +28,7 @@ threads (see lib/patches.rb).}
 
   s.add_development_dependency 'bundler'
   s.add_development_dependency 'rake'
-  s.add_development_dependency 'rspec', '~> 2.0'
+  s.add_development_dependency 'rspec', '~> 3.0'
   s.add_development_dependency 'simplecov'
   s.add_development_dependency 'simplecov-rcov'
   s.add_development_dependency 'coveralls'
