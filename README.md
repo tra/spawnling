@@ -7,7 +7,7 @@ Spawnling
 [![Dependency Status](https://gemnasium.com/tra/spawnling.png)](https://gemnasium.com/tra/spawnling)
 [![Code Climate](https://codeclimate.com/github/tra/spawnling.png)](https://codeclimate.com/github/tra/spawnling)
 
-#News
+# News
 
 2013-4-15 gem renamed from "spawn-block" (lame) to "spawnling" (awesome).  Sadly the
 name "spawn" was taken before I got around to making this into a gem so I decided to
