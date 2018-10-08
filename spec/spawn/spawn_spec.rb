@@ -21,14 +21,14 @@ describe Spawnling do
 
     it "should work in new block" do
       object = double('object')
-      object.should_receive(:do_something)
+      expect(object).to receive(:do_something)
       Spawnling.new do
         object.do_something
       end
     end
 
     it "should be able to yield directly" do
-      spawn!.should == "hello"
+      expect(spawn!).to eq("hello")
     end
   end
 
@@ -38,7 +38,7 @@ describe Spawnling do
     end
 
     it "should be able to return a proc" do
-      spawn!.should == "foo"
+      expect(spawn!).to eq("foo")
     end
 
   end
@@ -49,11 +49,11 @@ describe Spawnling do
     end
 
     it "should be able to return a proc" do
-      spawn!.should be_kind_of(Proc)
+      expect(spawn!).to be_kind_of(Proc)
     end
 
     it "should be able to return a proc" do
-      spawn!.call.should == "hello"
+      expect(spawn!.call).to eq("hello")
     end
   end
 
@@ -64,20 +64,20 @@ describe Spawnling do
     end
 
     it "should be able to return a proc" do
-      Store.flag.should be_falsey
+      expect(Store.flag).to be_falsey
       spawn_flag!
       sleep(0.1) # wait for file to finish writing
-      Store.flag.should be_truthy
+      expect(Store.flag).to be_truthy
     end
 
     it "instance should have a type" do
       instance = Spawnling.new{}
-      instance.type.should be(:thread)
+      expect(instance.type).to be(:thread)
     end
 
     it "instance should have a handle" do
       instance = Spawnling.new{}
-      instance.handle.should_not be_nil
+      expect(instance.handle).not_to be_nil
     end
   end
 
@@ -88,20 +88,20 @@ describe Spawnling do
     end
 
     it "should be able to return a proc" do
-      Store.flag.should be_falsey
+      expect(Store.flag).to be_falsey
       spawn_flag!
       sleep(0.1) # wait for file to finish writing
-      Store.flag.should be_truthy
+      expect(Store.flag).to be_truthy
     end
 
     it "instance should have a type" do
       instance = Spawnling.new{}
-      instance.type.should be(:fork)
+      expect(instance.type).to be(:fork)
     end
 
     it "instance should have a handle" do
       instance = Spawnling.new{}
-      instance.handle.should_not be_nil
+      expect(instance.handle).not_to be_nil
     end
   end
 
