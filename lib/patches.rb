@@ -137,7 +137,7 @@ end
 if defined?(Rails)
   class SpawnlingCache < Rails::Railtie
     initializer "cache" do
-      if defined?(::ActiveSupport::Cache::MemCacheStore) && Rails.cache.class.name == 'ActiveSupport::Cache::MemCacheStore'
+      if Rails.cache.class.name == 'ActiveSupport::Cache::MemCacheStore' && defined?(::ActiveSupport::Cache::MemCacheStore)
         ::ActiveSupport::Cache::MemCacheStore.delegate :reset, :to => :@data
       end
     end
